@@ -1,4 +1,4 @@
-# Midi Organ
+# Puffatron
 
 ## FreeCAD
 Currently using FreeCAD v1.1.0

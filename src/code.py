@@ -1,6 +1,11 @@
+# SPDX-FileCopyrightText: 2026 Stephen Merrony
+# SPDX-License-Identifier: MIT
+
+
 import time
 import board
 import neopixel
+import supervisor
 import usb_midi
 import adafruit_midi
 from adafruit_midi.note_on import NoteOn
@@ -12,7 +17,10 @@ green = (255, 0, 0)
 blue = (0, 0, 255)
 black = (0, 0, 0)
 
-midi = adafruit_midi.MIDI(midi_in=usb_midi.ports[0], in_channel=0)
+midi = adafruit_midi.MIDI(
+        midi_in=usb_midi.ports[0],
+        in_channel = supervisor.get_setting("MIDI_CHANNEL")
+        )
 
 
 print("MidiOrgan ready...")

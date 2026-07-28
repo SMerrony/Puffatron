@@ -25,4 +25,4 @@ The 3D-printed windchest seems to max out at 33 pipes (on a 210x210mm print bed)
 
 ## Software/Firmware
 
-As the required functionality is quite simple, I have chosen to use CircuitPython 
+As the required functionality is quite simple I have chosen to use CircuitPython which provides all the libraries needed (eg. USB MIDI, MCP23017).
