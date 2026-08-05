@@ -15,8 +15,7 @@ Each RP2040-Zero can handle...
 * 20 GPIOs using the pins only - not the pads
 * 48 GPIOs using 3 x MCP23017 16-way I2C GPIO expanders
 * 66 GPIOs using 3 expanders and 18 pins
-* 112 GPIOs using 6 expanders and 16 pins
-* 144 GPIOs using 8 expanders and 16 pins
+* 146 GPIOs using 8 expanders and 18 pins
 
 To handle the desired 49 notes per rank, best to use 3 expanders and one built-in GPIO.
 
@@ -34,8 +33,11 @@ The configuration is stored in the `settings.toml` file.  The following keys are
 * DEBUG - set to `false` for production, `true` for development - controls debug messages
 * MIDI_CHANNEL - which MIDI channel should this Puffatron listen to
 * LOWEST_NOTE - MIDI note number of lowest note playable on this Puffatron
-* HIGHEST_NOTE - guess!
-
+* DISP_ADDR - do not change the following except when developing Puffatron
+* DISP_HEIGHT 
+* DISP_WIDTH 
+* DISP_BORDER 
+  
 ## Wiring Conventions
 By establishing the following conventions we eliminate the need for complex configuration files...
 * It is assumed that all notes between HIGHEST_NOTE and LOWEST_NOTE exist.
