@@ -33,15 +33,12 @@ NUM_NOTES = (HIGHEST_NOTE - LOWEST_NOTE) + 1
 VU_COL_WIDTH = (DISP_WIDTH - (2 * DISP_BORDER)) // NUM_NOTES
 VU_COL_HEIGHT = DISP_HEIGHT - (2 * DISP_BORDER)
 
-def vu_note( note_num, on_off, scr):
-    adjusted_note = note_num - LOWEST_NOTE
+# build a dict of all possible bars for the "VU meter"
+bar_dict = {}
+for bar in range(LOWEST_NOTE, HIGHEST_NOTE + 1):
+    adjusted_note = bar - LOWEST_NOTE
     x_left = adjusted_note * VU_COL_WIDTH
-    if on_off:
-        rect = Rect(x_left, DISP_BORDER, VU_COL_WIDTH, VU_COL_HEIGHT, fill=0xffffff)
-    else:
-        rect = Rect(x_left, DISP_BORDER, VU_COL_WIDTH, VU_COL_HEIGHT, fill=0x000000)
-    scr.append(rect)
-    if DEBUG: print("X: ", x_left, " Col_Width: ", VU_COL_WIDTH)
+    bar_dict[bar] = Rect(x_left, DISP_BORDER, VU_COL_WIDTH, VU_COL_HEIGHT, fill=0xffffff)
 
 displayio.release_displays()
 i2c = busio.I2C(board.GP3, board.GP2)
@@ -135,13 +132,13 @@ while True:
         if DEBUG: print("Note On:  ", msg.note, " velocity: ", msg.velocity)
         if playable(msg.note):
             start_note(msg.note) 
-            vu_note(msg.note, True, screen)
+            screen.append(bar_dict[msg.note])
             if DEBUG: led.fill(green) # Order: GRB
     elif isinstance(msg, NoteOff) or (isinstance(msg, NoteOn) and msg.velocity == 0):
         if DEBUG: print("Note Off: ", msg.note)
         if playable(msg.note):
             stop_note(msg.note)
-            vu_note(msg.note, False, screen)
+            screen.remove(bar_dict[msg.note])
             if DEBUG:led.fill(black)
     elif isinstance(msg, ControlChange):
         if msg.control >= 120 and msg.control <= 123:
