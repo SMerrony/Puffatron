@@ -30,7 +30,7 @@ As the required functionality is quite simple I have chosen to use CircuitPython
 ## Configuration
 The configuration is stored in the `settings.toml` file.  The following keys are recognised...
 * VERSION - do not change except when developing Puffatron
-* DEBUG - set to `false` for production, `true` for development - controls debug messages
+* DEBUG - set to `false` for production, `true` for development - controls debug messages, slows responsiveness of Puffatron
 * MIDI_CHANNEL - which MIDI channel should this Puffatron listen to
 * LOWEST_NOTE - MIDI note number of lowest note playable on this Puffatron
 * DISP_ADDR - do not change the following except when developing Puffatron

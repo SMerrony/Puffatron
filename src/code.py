@@ -38,7 +38,14 @@ bar_dict = {}
 for bar in range(LOWEST_NOTE, HIGHEST_NOTE + 1):
     adjusted_note = bar - LOWEST_NOTE
     x_left = adjusted_note * VU_COL_WIDTH
-    bar_dict[bar] = Rect(x_left, DISP_BORDER, VU_COL_WIDTH, VU_COL_HEIGHT, fill=0xffffff)
+    if NUM_NOTES < (VU_COL_HEIGHT / 2):
+        adjusted_note *= 2
+    bar_dict[bar] = Rect(
+        x_left, 
+        DISP_BORDER + adjusted_note, 
+        VU_COL_WIDTH, 
+        VU_COL_HEIGHT - adjusted_note, 
+        fill=0xffffff)
 
 displayio.release_displays()
 i2c = busio.I2C(board.GP3, board.GP2)
@@ -138,7 +145,12 @@ while True:
         if DEBUG: print("Note Off: ", msg.note)
         if playable(msg.note):
             stop_note(msg.note)
-            screen.remove(bar_dict[msg.note])
+            # The error handling below deals with the rare case where we might get a Note Off without
+            # having received a corresponding Note On.
+            try:
+                screen.remove(bar_dict[msg.note])
+            except:
+                if DEBUG: print("Error removing VU bar which didn't exist")
             if DEBUG:led.fill(black)
     elif isinstance(msg, ControlChange):
         if msg.control >= 120 and msg.control <= 123:
