@@ -11,7 +11,7 @@ from   adafruit_midi.note_off import NoteOff
 from   adafruit_midi.control_change import ControlChange
 import board
 import busio
-from   digitalio import Direction
+from   digitalio import DigitalInOut, Direction
 import displayio
 from   i2cdisplaybus import I2CDisplayBus
 import neopixel
@@ -48,7 +48,8 @@ BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 
 # Globals...
-mcps = []
+mcps: list[MCP23017] = []
+pipe_pins: list[DigitalInOut] = []
 bar_dict = {}
 
 if DEBUG: print("Number of MCP23017s: ", NUM_MCP23017s)
@@ -56,10 +57,23 @@ if DEBUG: print("Number of MCP23017s: ", NUM_MCP23017s)
 # Functions
 
 def setup_mcp23017s():
-    pass
+    i2c = busio.I2C(board.GP1, board.GP0)
+    for mcp in range(1, NUM_MCP23017s + 1):
+        if DEBUG: print("Setting up MCP")
+        mcps.append(MCP23017(i2c, address = BASE_MCP23017_I2C_ADDRESS + mcp - 1))
+        for pin in range(0,16):
+            if DEBUG: print("Adding MCP pin")
+            pipe_pins.append(mcps[mcp - 1].get_pin(pin)) # type: ignore
+    if DEBUG: print("Total pins: ", len(pipe_pins))
+    # set all the pins to output - even if we're not using them
+    for pin in pipe_pins:
+        if DEBUG: print("Setting pin to output")
+        pin.direction = Direction.OUTPUT
+        pin.value = False
 
-def setup_vu_meter():
+def setup_pipe_display():
     # build a dict of all possible bars for the "VU meter"
+    # this stores the images in the bar_dict
     for bar in range(LOWEST_NOTE, HIGHEST_NOTE + 1):
         adjusted_note = bar - LOWEST_NOTE
         x_left = adjusted_note * VU_COL_WIDTH
@@ -88,7 +102,8 @@ def setup_neopixel() -> neopixel.NeoPixel:
 
 def setup_midi(channel : int) -> adafruit_midi.MIDI:
     midi = adafruit_midi.MIDI(
-        midi_in=usb_midi.ports[0],
+        midi_in = usb_midi.ports[0], # type: ignore
+        midi_out = None,
         in_channel = channel
         )
     return midi
@@ -122,31 +137,15 @@ def playable(note_num : int) -> bool:
     else:
         return True
 
-# translate a MIDI note number into a GPIO address.
-# This conforms to the wiring conventions described in DevNotes.md
-def note_to_gpio(note_num : int):
-    i2c_addr: int = 0 
-    pin: int = 0
-    if note_num < LOWEST_NOTE or note_num > HIGHEST_NOTE:
-        pin = UNPLAYABLE
-    elif note_num < LOWEST_NOTE + 16:
-        i2c_addr = 0x20     # 1st i2c expander
-        pin = note_num - LOWEST_NOTE
-    elif note_num < LOWEST_NOTE + 32:
-        i2c_addr = 0x21     # 2nd expander
-        pin = note_num - LOWEST_NOTE - 16
-    else:
-        i2c_addr = 0x22     # 3rd expander
-        pin = note_num - 32
-    # TODO handle valid notes beyond third I2C expander
-    if DEBUG: print("note_to_gpio returning: ", i2c_addr, pin)
-    return i2c_addr, note_num
-
 def start_note(note_num):
-    i2c_addr, pin = note_to_gpio(note_num)
+    # i2c_addr, pin = note_to_gpio(note_num)
+    if DEBUG: print("Pin index: ", note_num - LOWEST_NOTE)
+    pipe_pins[note_num - LOWEST_NOTE].value = True
 
 def stop_note(note_num):
-    i2c_addr, pin = note_to_gpio(note_num)
+    # i2c_addr, pin = note_to_gpio(note_num)
+    if DEBUG: print("Pin index: ", note_num - LOWEST_NOTE)
+    pipe_pins[note_num - LOWEST_NOTE].value = False
 
 def stop_all_notes():
     n = LOWEST_NOTE
@@ -158,7 +157,7 @@ def stop_all_notes():
 
 screen = setup_ssd1306_display()
 splash(screen)
-setup_vu_meter()
+setup_pipe_display()
 
 midi = setup_midi(MIDI_CHANNEL)
 led  = setup_neopixel()
