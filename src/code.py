@@ -1,26 +1,29 @@
 # SPDX-FileCopyrightText: 2026 Stephen Merrony
 # SPDX-License-Identifier: MIT
 
-from adafruit_display_shapes.rect import Rect
-from adafruit_display_text import label
+from   adafruit_display_shapes.rect import Rect
+from   adafruit_display_text import label
 import adafruit_displayio_ssd1306
+from   adafruit_mcp230xx.mcp23017 import MCP23017
+import adafruit_midi
+from   adafruit_midi.note_on import NoteOn
+from   adafruit_midi.note_off import NoteOff
+from   adafruit_midi.control_change import ControlChange
 import board
 import busio
+from   digitalio import Direction
 import displayio
+from   i2cdisplaybus import I2CDisplayBus
 import neopixel
 import supervisor
 import terminalio
 import time
 import usb_midi
-import adafruit_midi
-from adafruit_midi.note_on import NoteOn
-from adafruit_midi.note_off import NoteOff
-from adafruit_midi.control_change import ControlChange
-from i2cdisplaybus import I2CDisplayBus
 
 # Grab some settings 
 VERSION      = supervisor.get_setting("VERSION")
 DEBUG        = supervisor.get_setting("DEBUG")
+MIDI_CHANNEL = supervisor.get_setting("MIDI_CHANNEL")
 LOWEST_NOTE  = supervisor.get_setting("LOWEST_NOTE")
 HIGHEST_NOTE = supervisor.get_setting("HIGHEST_NOTE")
 DISP_ADDR    = supervisor.get_setting("DISP_ADDR")
@@ -33,29 +36,64 @@ NUM_NOTES = (HIGHEST_NOTE - LOWEST_NOTE) + 1
 VU_COL_WIDTH = (DISP_WIDTH - (2 * DISP_BORDER)) // NUM_NOTES
 VU_COL_HEIGHT = DISP_HEIGHT - (2 * DISP_BORDER)
 
-# build a dict of all possible bars for the "VU meter"
+# Other constants
+BASE_MCP23017_I2C_ADDRESS = 0x20
+NUM_MCP23017s = (NUM_NOTES // 16) + 1
+
+UNPLAYABLE = -1
+
+RED = (0, 255, 0)
+GREEN = (255, 0, 0)
+BLUE = (0, 0, 255)
+BLACK = (0, 0, 0)
+
+# Globals...
+mcps = []
 bar_dict = {}
-for bar in range(LOWEST_NOTE, HIGHEST_NOTE + 1):
-    adjusted_note = bar - LOWEST_NOTE
-    x_left = adjusted_note * VU_COL_WIDTH
-    if NUM_NOTES < (VU_COL_HEIGHT / 2):
-        adjusted_note *= 2
-    bar_dict[bar] = Rect(
-        x_left, 
-        DISP_BORDER + adjusted_note, 
-        VU_COL_WIDTH, 
-        VU_COL_HEIGHT - adjusted_note, 
-        fill=0xffffff)
 
-displayio.release_displays()
-i2c = busio.I2C(board.GP3, board.GP2)
-display_bus = I2CDisplayBus(i2c, device_address=DISP_ADDR)
-display = adafruit_displayio_ssd1306.SSD1306(display_bus, width=DISP_WIDTH, height=DISP_HEIGHT)
-# Make the display context
-screen = displayio.Group()
-display.root_group = screen
+if DEBUG: print("Number of MCP23017s: ", NUM_MCP23017s)
 
-def splash(scr):
+# Functions
+
+def setup_mcp23017s():
+    pass
+
+def setup_vu_meter():
+    # build a dict of all possible bars for the "VU meter"
+    for bar in range(LOWEST_NOTE, HIGHEST_NOTE + 1):
+        adjusted_note = bar - LOWEST_NOTE
+        x_left = adjusted_note * VU_COL_WIDTH
+        if NUM_NOTES < (VU_COL_HEIGHT / 2):
+            adjusted_note *= 2
+        bar_dict[bar] = Rect(
+            x_left, 
+            DISP_BORDER + adjusted_note, 
+            VU_COL_WIDTH, 
+            VU_COL_HEIGHT - adjusted_note, 
+            fill=0xffffff)
+
+def setup_ssd1306_display() -> displayio.Group:
+    displayio.release_displays()
+    i2c = busio.I2C(board.GP3, board.GP2)
+    display_bus = I2CDisplayBus(i2c, device_address=DISP_ADDR)
+    display = adafruit_displayio_ssd1306.SSD1306(display_bus, width=DISP_WIDTH, height=DISP_HEIGHT)
+    # Make the display context
+    screen = displayio.Group()
+    display.root_group = screen
+    return screen
+
+def setup_neopixel() -> neopixel.NeoPixel:
+    led = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.2)
+    return led
+
+def setup_midi(channel : int) -> adafruit_midi.MIDI:
+    midi = adafruit_midi.MIDI(
+        midi_in=usb_midi.ports[0],
+        in_channel = channel
+        )
+    return midi
+
+def splash(scr : displayio.Group):
     app_label = label.Label(
         terminalio.FONT,
         x=10, y = 12,
@@ -78,15 +116,7 @@ def splash(scr):
     scr.remove(version_label)
     scr.remove(app_label)
 
-led = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.2)
-red = (0, 255, 0)
-green = (255, 0, 0)
-blue = (0, 0, 255)
-black = (0, 0, 0)
-
-UNPLAYABLE = 0
-
-def playable(note_num):
+def playable(note_num : int) -> bool:
     if note_num < LOWEST_NOTE or note_num > HIGHEST_NOTE:
         return False
     else:
@@ -94,9 +124,9 @@ def playable(note_num):
 
 # translate a MIDI note number into a GPIO address.
 # This conforms to the wiring conventions described in DevNotes.md
-def note_to_gpio(note_num):
-    i2c_addr = 0 
-    pin = 0
+def note_to_gpio(note_num : int):
+    i2c_addr: int = 0 
+    pin: int = 0
     if note_num < LOWEST_NOTE or note_num > HIGHEST_NOTE:
         pin = UNPLAYABLE
     elif note_num < LOWEST_NOTE + 16:
@@ -120,16 +150,19 @@ def stop_note(note_num):
 
 def stop_all_notes():
     n = LOWEST_NOTE
-    while n <= HIGHEST_NOTE:
+    while n <= HIGHEST_NOTE: 
         stop_note(n)
         n += 1
 
-splash(screen)
+# **** Main code starts here **** #
 
-midi = adafruit_midi.MIDI(
-        midi_in=usb_midi.ports[0],
-        in_channel = supervisor.get_setting("MIDI_CHANNEL")
-        )
+screen = setup_ssd1306_display()
+splash(screen)
+setup_vu_meter()
+
+midi = setup_midi(MIDI_CHANNEL)
+led  = setup_neopixel()
+mcps = setup_mcp23017s()
 
 print("Puffatron ready...")
 
@@ -139,8 +172,12 @@ while True:
         if DEBUG: print("Note On:  ", msg.note, " velocity: ", msg.velocity)
         if playable(msg.note):
             start_note(msg.note) 
-            screen.append(bar_dict[msg.note])
-            if DEBUG: led.fill(green) # Order: GRB
+            # The error handling below is for the rare case when we get two Note Ons for the same note
+            try:
+                screen.append(bar_dict[msg.note])
+            except:
+                if DEBUG: print("Error drawing a VU bar which was already there")    
+            if DEBUG: led.fill(GREEN) # Order: GRB
     elif isinstance(msg, NoteOff) or (isinstance(msg, NoteOn) and msg.velocity == 0):
         if DEBUG: print("Note Off: ", msg.note)
         if playable(msg.note):
@@ -151,7 +188,7 @@ while True:
                 screen.remove(bar_dict[msg.note])
             except:
                 if DEBUG: print("Error removing VU bar which didn't exist")
-            if DEBUG:led.fill(black)
+            if DEBUG:led.fill(BLACK)
     elif isinstance(msg, ControlChange):
         if msg.control >= 120 and msg.control <= 123:
             if DEBUG: print("All notes off/panic")

@@ -3,14 +3,15 @@
 
 The Puffatron is a mostly 3D printed USB MIDI-controlled pipe organ rank.
 
-## Goals
+## Features
 * Easy to configure
+* Active pipe display - a bit like a VU meter
 * Relatively low-cost
-* All the 3D printed parts should be printable on a reasonably common domestic 3D printer eg. an Ender-3 KE
-* All the off-the-shelf parts should be easily obtainable
+* All the 3D printed parts are printable on a reasonably common domestic 3D printer eg. an Ender-3 KE
+* All the off-the-shelf parts are easily obtainable
 
 ## Configuration
-The configuration is stored in the `settings.toml` file.  The following settings are required...
+The configuration is stored in the `settings.toml` file.  All of the following settings are required...
 
 * __MIDI_CHANNEL__ - which MIDI channel should this Puffatron play
 * __LOWEST_NOTE__ - MIDI note number of lowest note playable on this Puffatron
