@@ -1,0 +1,861 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="E">
+  <design>
+    <source>/home/steve/CircuitPython/Puffatron/PCB/Puffatron/Puffatron.kicad_sch</source>
+    <date>Sat 08 Aug 2026 10:13:34 CEST</date>
+    <tool>Eeschema 7.0.11+dfsg-1build4</tool>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title>Puffatron Controller Schematic</title>
+        <company/>
+        <rev/>
+        <date>2026-08-04</date>
+        <source>Puffatron.kicad_sch</source>
+        <comment number="1" value=""/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="Brd1">
+      <value>SSD1306</value>
+      <libsource lib="SSD1306-128x64_OLED" part="SSD1306" description="SSD1306 OLED"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="Puffatron.kicad_sch"/>
+      <property name="ki_description" value="SSD1306 OLED"/>
+      <property name="ki_keywords" value="SSD1306"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>46afc133-9a7e-4119-8e1e-ec2c62e01027</tstamps>
+    </comp>
+    <comp ref="R1">
+      <value>R_Small</value>
+      <libsource lib="Device" part="R_Small" description="Resistor, small symbol"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="Puffatron.kicad_sch"/>
+      <property name="ki_description" value="Resistor, small symbol"/>
+      <property name="ki_keywords" value="R resistor"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>2ea03c48-2781-42d1-bf58-4563a057d425</tstamps>
+    </comp>
+    <comp ref="R2">
+      <value>R_Small</value>
+      <libsource lib="Device" part="R_Small" description="Resistor, small symbol"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="Puffatron.kicad_sch"/>
+      <property name="ki_description" value="Resistor, small symbol"/>
+      <property name="ki_keywords" value="R resistor"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>f7a988dc-4d20-4b20-949c-07ed553280ed</tstamps>
+    </comp>
+    <comp ref="U1">
+      <value>RP2040-ZERO</value>
+      <footprint>RP2040-ZERO:MODULE_RP2040-ZERO</footprint>
+      <fields>
+        <field name="Availability">Not in stock</field>
+        <field name="Check_prices">https://www.snapeda.com/parts/RP2040-ZERO/Waveshare+Electronics/view-part/?ref=eda</field>
+        <field name="Description">
+                        
+                            Low-Cost, High-Performance Pico-Like MCU Board Based On Raspberry Pi Microcontroller RP2040
+                        
+</field>
+        <field name="MANUFACTURER">Waveshare</field>
+        <field name="MAXIMUM_PACKAGE_HEIGHT">5.35mm</field>
+        <field name="MF">Waveshare Electronics</field>
+        <field name="MP">RP2040-ZERO</field>
+        <field name="PARTREV">NA</field>
+        <field name="Package">Package</field>
+        <field name="Price">None</field>
+        <field name="STANDARD">Manufacturer Recommendations</field>
+        <field name="SnapEDA_Link">https://www.snapeda.com/parts/RP2040-ZERO/Waveshare+Electronics/view-part/?ref=snap</field>
+      </fields>
+      <libsource lib="RP2040-ZERO" part="RP2040-ZERO" description=""/>
+      <property name="MF" value="Waveshare Electronics"/>
+      <property name="MAXIMUM_PACKAGE_HEIGHT" value="5.35mm"/>
+      <property name="Package" value="Package"/>
+      <property name="Price" value="None"/>
+      <property name="Check_prices" value="https://www.snapeda.com/parts/RP2040-ZERO/Waveshare+Electronics/view-part/?ref=eda"/>
+      <property name="STANDARD" value="Manufacturer Recommendations"/>
+      <property name="PARTREV" value="NA"/>
+      <property name="SnapEDA_Link" value="https://www.snapeda.com/parts/RP2040-ZERO/Waveshare+Electronics/view-part/?ref=snap"/>
+      <property name="MP" value="RP2040-ZERO"/>
+      <property name="Description" value="&#xA;                        &#xA;                            Low-Cost, High-Performance Pico-Like MCU Board Based On Raspberry Pi Microcontroller RP2040&#xA;                        &#xA;"/>
+      <property name="Availability" value="Not in stock"/>
+      <property name="MANUFACTURER" value="Waveshare"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="Puffatron.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>745d8bb4-6d57-4068-ab6b-43c024346c08</tstamps>
+    </comp>
+    <comp ref="U2">
+      <value>MCP23017_SP</value>
+      <footprint>Package_DIP:DIP-28_W7.62mm</footprint>
+      <datasheet>http://ww1.microchip.com/downloads/en/DeviceDoc/20001952C.pdf</datasheet>
+      <libsource lib="Interface_Expansion" part="MCP23017_SP" description="16-bit I/O expander, I2C, interrupts, w pull-ups, SPDIP-28"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="Puffatron.kicad_sch"/>
+      <property name="ki_description" value="16-bit I/O expander, I2C, interrupts, w pull-ups, SPDIP-28"/>
+      <property name="ki_keywords" value="I2C parallel port expander"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>bc0ecaf6-2406-4db8-8e9a-99e10cbb93da</tstamps>
+    </comp>
+    <comp ref="U3">
+      <value>ULN2803A</value>
+      <datasheet>http://www.ti.com/lit/ds/symlink/uln2803a.pdf</datasheet>
+      <libsource lib="Transistor_Array" part="ULN2803A" description="Darlington Transistor Arrays, SOIC18/DIP18"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="Puffatron.kicad_sch"/>
+      <property name="ki_description" value="Darlington Transistor Arrays, SOIC18/DIP18"/>
+      <property name="ki_keywords" value="Darlington transistor array"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>c9578045-bc60-41a8-9273-036a77cc8baf</tstamps>
+    </comp>
+    <comp ref="U4">
+      <value>MCP23017_SP</value>
+      <footprint>Package_DIP:DIP-28_W7.62mm</footprint>
+      <datasheet>http://ww1.microchip.com/downloads/en/DeviceDoc/20001952C.pdf</datasheet>
+      <libsource lib="Interface_Expansion" part="MCP23017_SP" description="16-bit I/O expander, I2C, interrupts, w pull-ups, SPDIP-28"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="Puffatron.kicad_sch"/>
+      <property name="ki_description" value="16-bit I/O expander, I2C, interrupts, w pull-ups, SPDIP-28"/>
+      <property name="ki_keywords" value="I2C parallel port expander"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>c1028935-150d-47ed-86ae-cb102ff821b8</tstamps>
+    </comp>
+    <comp ref="U5">
+      <value>MCP23017_SP</value>
+      <footprint>Package_DIP:DIP-28_W7.62mm</footprint>
+      <datasheet>http://ww1.microchip.com/downloads/en/DeviceDoc/20001952C.pdf</datasheet>
+      <libsource lib="Interface_Expansion" part="MCP23017_SP" description="16-bit I/O expander, I2C, interrupts, w pull-ups, SPDIP-28"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="Puffatron.kicad_sch"/>
+      <property name="ki_description" value="16-bit I/O expander, I2C, interrupts, w pull-ups, SPDIP-28"/>
+      <property name="ki_keywords" value="I2C parallel port expander"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>e8415f1f-97c7-4fd4-8bd7-15564654735f</tstamps>
+    </comp>
+    <comp ref="U6">
+      <value>ULN2803A</value>
+      <datasheet>http://www.ti.com/lit/ds/symlink/uln2803a.pdf</datasheet>
+      <libsource lib="Transistor_Array" part="ULN2803A" description="Darlington Transistor Arrays, SOIC18/DIP18"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="Puffatron.kicad_sch"/>
+      <property name="ki_description" value="Darlington Transistor Arrays, SOIC18/DIP18"/>
+      <property name="ki_keywords" value="Darlington transistor array"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>b13f1a3e-62ab-4a2e-9058-9e7baf44d93d</tstamps>
+    </comp>
+    <comp ref="U7">
+      <value>ULN2803A</value>
+      <datasheet>http://www.ti.com/lit/ds/symlink/uln2803a.pdf</datasheet>
+      <libsource lib="Transistor_Array" part="ULN2803A" description="Darlington Transistor Arrays, SOIC18/DIP18"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="Puffatron.kicad_sch"/>
+      <property name="ki_description" value="Darlington Transistor Arrays, SOIC18/DIP18"/>
+      <property name="ki_keywords" value="Darlington transistor array"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>826390cb-33e5-47d9-8dac-26ed1a493a17</tstamps>
+    </comp>
+    <comp ref="U8">
+      <value>ULN2803A</value>
+      <datasheet>http://www.ti.com/lit/ds/symlink/uln2803a.pdf</datasheet>
+      <libsource lib="Transistor_Array" part="ULN2803A" description="Darlington Transistor Arrays, SOIC18/DIP18"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="Puffatron.kicad_sch"/>
+      <property name="ki_description" value="Darlington Transistor Arrays, SOIC18/DIP18"/>
+      <property name="ki_keywords" value="Darlington transistor array"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>cb0393f0-d883-407e-beea-28c819f67375</tstamps>
+    </comp>
+    <comp ref="U9">
+      <value>ULN2803A</value>
+      <datasheet>http://www.ti.com/lit/ds/symlink/uln2803a.pdf</datasheet>
+      <libsource lib="Transistor_Array" part="ULN2803A" description="Darlington Transistor Arrays, SOIC18/DIP18"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="Puffatron.kicad_sch"/>
+      <property name="ki_description" value="Darlington Transistor Arrays, SOIC18/DIP18"/>
+      <property name="ki_keywords" value="Darlington transistor array"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>7f98c3de-8e4a-40c0-a73f-6c8e632593bd</tstamps>
+    </comp>
+    <comp ref="U10">
+      <value>ULN2803A</value>
+      <datasheet>http://www.ti.com/lit/ds/symlink/uln2803a.pdf</datasheet>
+      <libsource lib="Transistor_Array" part="ULN2803A" description="Darlington Transistor Arrays, SOIC18/DIP18"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="Puffatron.kicad_sch"/>
+      <property name="ki_description" value="Darlington Transistor Arrays, SOIC18/DIP18"/>
+      <property name="ki_keywords" value="Darlington transistor array"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>51aa2d8b-fb21-42da-9d66-59542ce716d9</tstamps>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="Device" part="R_Small">
+      <description>Resistor, small symbol</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>R_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">R</field>
+        <field name="Value">R_Small</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Interface_Expansion" part="MCP23017_SP">
+      <description>16-bit I/O expander, I2C, interrupts, w pull-ups, SPDIP-28</description>
+      <docs>http://ww1.microchip.com/downloads/en/DeviceDoc/20001952C.pdf</docs>
+      <footprints>
+        <fp>DIP*W7.62mm*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">MCP23017_SP</field>
+        <field name="Footprint">Package_DIP:DIP-28_W7.62mm</field>
+        <field name="Datasheet">http://ww1.microchip.com/downloads/en/DeviceDoc/20001952C.pdf</field>
+      </fields>
+      <pins>
+        <pin num="1" name="GPB0" type="bidirectional"/>
+        <pin num="2" name="GPB1" type="bidirectional"/>
+        <pin num="3" name="GPB2" type="bidirectional"/>
+        <pin num="4" name="GPB3" type="bidirectional"/>
+        <pin num="5" name="GPB4" type="bidirectional"/>
+        <pin num="6" name="GPB5" type="bidirectional"/>
+        <pin num="7" name="GPB6" type="bidirectional"/>
+        <pin num="8" name="GPB7" type="bidirectional"/>
+        <pin num="9" name="VDD" type="power_in"/>
+        <pin num="10" name="VSS" type="power_in"/>
+        <pin num="11" name="NC" type="no_connect"/>
+        <pin num="12" name="SCK" type="input"/>
+        <pin num="13" name="SDA" type="bidirectional"/>
+        <pin num="14" name="NC" type="no_connect"/>
+        <pin num="15" name="A0" type="input"/>
+        <pin num="16" name="A1" type="input"/>
+        <pin num="17" name="A2" type="input"/>
+        <pin num="18" name="~{RESET}" type="input"/>
+        <pin num="19" name="INTB" type="tri_state"/>
+        <pin num="20" name="INTA" type="tri_state"/>
+        <pin num="21" name="GPA0" type="bidirectional"/>
+        <pin num="22" name="GPA1" type="bidirectional"/>
+        <pin num="23" name="GPA2" type="bidirectional"/>
+        <pin num="24" name="GPA3" type="bidirectional"/>
+        <pin num="25" name="GPA4" type="bidirectional"/>
+        <pin num="26" name="GPA5" type="bidirectional"/>
+        <pin num="27" name="GPA6" type="bidirectional"/>
+        <pin num="28" name="GPA7" type="bidirectional"/>
+      </pins>
+    </libpart>
+    <libpart lib="RP2040-ZERO" part="RP2040-ZERO">
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">RP2040-ZERO</field>
+        <field name="Footprint">RP2040-ZERO:MODULE_RP2040-ZERO</field>
+        <field name="MF">Waveshare Electronics</field>
+        <field name="MAXIMUM_PACKAGE_HEIGHT">5.35mm</field>
+        <field name="Package">Package</field>
+        <field name="Price">None</field>
+        <field name="Check_prices">https://www.snapeda.com/parts/RP2040-ZERO/Waveshare+Electronics/view-part/?ref=eda</field>
+        <field name="STANDARD">Manufacturer Recommendations</field>
+        <field name="PARTREV">NA</field>
+        <field name="SnapEDA_Link">https://www.snapeda.com/parts/RP2040-ZERO/Waveshare+Electronics/view-part/?ref=snap</field>
+        <field name="MP">RP2040-ZERO</field>
+        <field name="Description">
+                        
+                            Low-Cost, High-Performance Pico-Like MCU Board Based On Raspberry Pi Microcontroller RP2040
+                        
+</field>
+        <field name="Availability">Not in stock</field>
+        <field name="MANUFACTURER">Waveshare</field>
+      </fields>
+      <pins>
+        <pin num="1" name="GP0" type="bidirectional"/>
+        <pin num="2" name="GP1" type="bidirectional"/>
+        <pin num="3" name="GP2" type="bidirectional"/>
+        <pin num="4" name="GP3" type="bidirectional"/>
+        <pin num="5" name="GP4" type="bidirectional"/>
+        <pin num="6" name="GP5" type="bidirectional"/>
+        <pin num="7" name="GP6" type="bidirectional"/>
+        <pin num="8" name="GP7" type="bidirectional"/>
+        <pin num="9" name="GP8" type="bidirectional"/>
+        <pin num="10" name="GP9" type="bidirectional"/>
+        <pin num="11" name="GP10" type="bidirectional"/>
+        <pin num="12" name="GP11" type="bidirectional"/>
+        <pin num="13" name="GP12" type="bidirectional"/>
+        <pin num="14" name="GP13" type="bidirectional"/>
+        <pin num="15" name="GP14" type="bidirectional"/>
+        <pin num="16" name="GP15" type="bidirectional"/>
+        <pin num="17" name="GP26" type="bidirectional"/>
+        <pin num="18" name="GP27" type="bidirectional"/>
+        <pin num="19" name="GP28" type="bidirectional"/>
+        <pin num="20" name="GP29" type="bidirectional"/>
+        <pin num="21" name="3V3" type="power_in"/>
+        <pin num="22" name="GND" type="power_in"/>
+        <pin num="23" name="5V" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="SSD1306-128x64_OLED" part="SSD1306">
+      <description>SSD1306 OLED</description>
+      <footprints>
+        <fp>SSD1306-128x64_OLED:SSD1306</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">Brd</field>
+        <field name="Value">SSD1306</field>
+      </fields>
+      <pins>
+        <pin num="1" name="GND" type="input"/>
+        <pin num="2" name="VCC" type="input"/>
+        <pin num="3" name="SCL" type="input"/>
+        <pin num="4" name="SDA" type="input"/>
+      </pins>
+    </libpart>
+    <libpart lib="Transistor_Array" part="ULN2803A">
+      <description>Darlington Transistor Arrays, SOIC18/DIP18</description>
+      <docs>http://www.ti.com/lit/ds/symlink/uln2803a.pdf</docs>
+      <footprints>
+        <fp>DIP*W7.62mm*</fp>
+        <fp>SOIC*7.5x11.6mm*P1.27mm*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">ULN2803A</field>
+        <field name="Datasheet">http://www.ti.com/lit/ds/symlink/uln2803a.pdf</field>
+      </fields>
+      <pins>
+        <pin num="1" name="I1" type="input"/>
+        <pin num="2" name="I2" type="input"/>
+        <pin num="3" name="I3" type="input"/>
+        <pin num="4" name="I4" type="input"/>
+        <pin num="5" name="I5" type="input"/>
+        <pin num="6" name="I6" type="input"/>
+        <pin num="7" name="I7" type="input"/>
+        <pin num="8" name="I8" type="input"/>
+        <pin num="9" name="GND" type="power_in"/>
+        <pin num="10" name="COM" type="passive"/>
+        <pin num="11" name="O8" type="open_collector"/>
+        <pin num="12" name="O7" type="open_collector"/>
+        <pin num="13" name="O6" type="open_collector"/>
+        <pin num="14" name="O5" type="open_collector"/>
+        <pin num="15" name="O4" type="open_collector"/>
+        <pin num="16" name="O3" type="open_collector"/>
+        <pin num="17" name="O2" type="open_collector"/>
+        <pin num="18" name="O1" type="open_collector"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="Device">
+      <uri>/usr/share/kicad/symbols//Device.kicad_sym</uri>
+    </library>
+    <library logical="Interface_Expansion">
+      <uri>/usr/share/kicad/symbols//Interface_Expansion.kicad_sym</uri>
+    </library>
+    <library logical="RP2040-ZERO">
+      <uri>/home/steve/Downloads/RP2040-ZERO/RP2040-ZERO.kicad_sym</uri>
+    </library>
+    <library logical="SSD1306-128x64_OLED">
+      <uri>/home/steve/3rdPartySrc/KiCad-SSD1306-128x64/library/SSD1306-128x64_OLED.kicad_sym</uri>
+    </library>
+    <library logical="Transistor_Array">
+      <uri>/usr/share/kicad/symbols//Transistor_Array.kicad_sym</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="+5V">
+      <node ref="U10" pin="10" pinfunction="COM" pintype="passive"/>
+      <node ref="U3" pin="10" pinfunction="COM" pintype="passive"/>
+      <node ref="U6" pin="10" pinfunction="COM" pintype="passive"/>
+      <node ref="U7" pin="10" pinfunction="COM" pintype="passive"/>
+      <node ref="U8" pin="10" pinfunction="COM" pintype="passive"/>
+      <node ref="U9" pin="10" pinfunction="COM" pintype="passive"/>
+    </net>
+    <net code="2" name="/SCL {slash} SCK">
+      <node ref="R1" pin="2" pintype="passive"/>
+      <node ref="R2" pin="2" pintype="passive"/>
+      <node ref="U1" pin="1" pinfunction="GP0" pintype="bidirectional"/>
+      <node ref="U1" pin="2" pinfunction="GP1" pintype="bidirectional"/>
+      <node ref="U2" pin="12" pinfunction="SCK" pintype="input"/>
+      <node ref="U2" pin="13" pinfunction="SDA" pintype="bidirectional"/>
+      <node ref="U4" pin="12" pinfunction="SCK" pintype="input"/>
+      <node ref="U4" pin="13" pinfunction="SDA" pintype="bidirectional"/>
+      <node ref="U5" pin="12" pinfunction="SCK" pintype="input"/>
+      <node ref="U5" pin="13" pinfunction="SDA" pintype="bidirectional"/>
+    </net>
+    <net code="3" name="GNDREF">
+      <node ref="Brd1" pin="1" pinfunction="GND" pintype="input"/>
+      <node ref="Brd1" pin="2" pinfunction="VCC" pintype="input"/>
+      <node ref="R1" pin="1" pintype="passive"/>
+      <node ref="R2" pin="1" pintype="passive"/>
+      <node ref="U1" pin="21" pinfunction="3V3" pintype="power_in"/>
+      <node ref="U1" pin="22" pinfunction="GND" pintype="power_in"/>
+      <node ref="U10" pin="9" pinfunction="GND" pintype="power_in"/>
+      <node ref="U2" pin="10" pinfunction="VSS" pintype="power_in"/>
+      <node ref="U2" pin="18" pinfunction="~{RESET}" pintype="input"/>
+      <node ref="U2" pin="9" pinfunction="VDD" pintype="power_in"/>
+      <node ref="U3" pin="9" pinfunction="GND" pintype="power_in"/>
+      <node ref="U4" pin="10" pinfunction="VSS" pintype="power_in"/>
+      <node ref="U4" pin="15" pinfunction="A0" pintype="input"/>
+      <node ref="U4" pin="16" pinfunction="A1" pintype="input"/>
+      <node ref="U4" pin="17" pinfunction="A2" pintype="input"/>
+      <node ref="U4" pin="18" pinfunction="~{RESET}" pintype="input"/>
+      <node ref="U4" pin="9" pinfunction="VDD" pintype="power_in"/>
+      <node ref="U5" pin="10" pinfunction="VSS" pintype="power_in"/>
+      <node ref="U5" pin="15" pinfunction="A0" pintype="input"/>
+      <node ref="U5" pin="16" pinfunction="A1" pintype="input"/>
+      <node ref="U5" pin="17" pinfunction="A2" pintype="input"/>
+      <node ref="U5" pin="18" pinfunction="~{RESET}" pintype="input"/>
+      <node ref="U5" pin="9" pinfunction="VDD" pintype="power_in"/>
+      <node ref="U6" pin="9" pinfunction="GND" pintype="power_in"/>
+      <node ref="U7" pin="9" pinfunction="GND" pintype="power_in"/>
+      <node ref="U8" pin="9" pinfunction="GND" pintype="power_in"/>
+      <node ref="U9" pin="9" pinfunction="GND" pintype="power_in"/>
+    </net>
+    <net code="4" name="Net-(Brd1-SCL)">
+      <node ref="Brd1" pin="3" pinfunction="SCL" pintype="input"/>
+      <node ref="U1" pin="4" pinfunction="GP3" pintype="bidirectional"/>
+    </net>
+    <net code="5" name="Net-(Brd1-SDA)">
+      <node ref="Brd1" pin="4" pinfunction="SDA" pintype="input"/>
+      <node ref="U1" pin="3" pinfunction="GP2" pintype="bidirectional"/>
+    </net>
+    <net code="6" name="Net-(U2-A0)">
+      <node ref="U2" pin="15" pinfunction="A0" pintype="input"/>
+      <node ref="U2" pin="16" pinfunction="A1" pintype="input"/>
+      <node ref="U2" pin="17" pinfunction="A2" pintype="input"/>
+    </net>
+    <net code="7" name="Net-(U2-GPA0)">
+      <node ref="U2" pin="21" pinfunction="GPA0" pintype="bidirectional"/>
+      <node ref="U8" pin="1" pinfunction="I1" pintype="input"/>
+    </net>
+    <net code="8" name="Net-(U2-GPA1)">
+      <node ref="U2" pin="22" pinfunction="GPA1" pintype="bidirectional"/>
+      <node ref="U8" pin="2" pinfunction="I2" pintype="input"/>
+    </net>
+    <net code="9" name="Net-(U2-GPA2)">
+      <node ref="U2" pin="23" pinfunction="GPA2" pintype="bidirectional"/>
+      <node ref="U8" pin="3" pinfunction="I3" pintype="input"/>
+    </net>
+    <net code="10" name="Net-(U2-GPA3)">
+      <node ref="U2" pin="24" pinfunction="GPA3" pintype="bidirectional"/>
+      <node ref="U8" pin="4" pinfunction="I4" pintype="input"/>
+    </net>
+    <net code="11" name="Net-(U2-GPA4)">
+      <node ref="U2" pin="25" pinfunction="GPA4" pintype="bidirectional"/>
+      <node ref="U8" pin="5" pinfunction="I5" pintype="input"/>
+    </net>
+    <net code="12" name="Net-(U2-GPA5)">
+      <node ref="U2" pin="26" pinfunction="GPA5" pintype="bidirectional"/>
+      <node ref="U8" pin="6" pinfunction="I6" pintype="input"/>
+    </net>
+    <net code="13" name="Net-(U2-GPA6)">
+      <node ref="U2" pin="27" pinfunction="GPA6" pintype="bidirectional"/>
+      <node ref="U8" pin="7" pinfunction="I7" pintype="input"/>
+    </net>
+    <net code="14" name="Net-(U2-GPA7)">
+      <node ref="U2" pin="28" pinfunction="GPA7" pintype="bidirectional"/>
+      <node ref="U8" pin="8" pinfunction="I8" pintype="input"/>
+    </net>
+    <net code="15" name="Net-(U2-GPB0)">
+      <node ref="U2" pin="1" pinfunction="GPB0" pintype="bidirectional"/>
+      <node ref="U3" pin="1" pinfunction="I1" pintype="input"/>
+    </net>
+    <net code="16" name="Net-(U2-GPB1)">
+      <node ref="U2" pin="2" pinfunction="GPB1" pintype="bidirectional"/>
+      <node ref="U3" pin="2" pinfunction="I2" pintype="input"/>
+    </net>
+    <net code="17" name="Net-(U2-GPB2)">
+      <node ref="U2" pin="3" pinfunction="GPB2" pintype="bidirectional"/>
+      <node ref="U3" pin="3" pinfunction="I3" pintype="input"/>
+    </net>
+    <net code="18" name="Net-(U2-GPB3)">
+      <node ref="U2" pin="4" pinfunction="GPB3" pintype="bidirectional"/>
+      <node ref="U3" pin="4" pinfunction="I4" pintype="input"/>
+    </net>
+    <net code="19" name="Net-(U2-GPB4)">
+      <node ref="U2" pin="5" pinfunction="GPB4" pintype="bidirectional"/>
+      <node ref="U3" pin="5" pinfunction="I5" pintype="input"/>
+    </net>
+    <net code="20" name="Net-(U2-GPB5)">
+      <node ref="U2" pin="6" pinfunction="GPB5" pintype="bidirectional"/>
+      <node ref="U3" pin="6" pinfunction="I6" pintype="input"/>
+    </net>
+    <net code="21" name="Net-(U2-GPB6)">
+      <node ref="U2" pin="7" pinfunction="GPB6" pintype="bidirectional"/>
+      <node ref="U3" pin="7" pinfunction="I7" pintype="input"/>
+    </net>
+    <net code="22" name="Net-(U2-GPB7)">
+      <node ref="U2" pin="8" pinfunction="GPB7" pintype="bidirectional"/>
+      <node ref="U3" pin="8" pinfunction="I8" pintype="input"/>
+    </net>
+    <net code="23" name="Net-(U4-GPB0)">
+      <node ref="U4" pin="1" pinfunction="GPB0" pintype="bidirectional"/>
+      <node ref="U7" pin="1" pinfunction="I1" pintype="input"/>
+    </net>
+    <net code="24" name="Net-(U4-GPB1)">
+      <node ref="U4" pin="2" pinfunction="GPB1" pintype="bidirectional"/>
+      <node ref="U7" pin="2" pinfunction="I2" pintype="input"/>
+    </net>
+    <net code="25" name="Net-(U4-GPB2)">
+      <node ref="U4" pin="3" pinfunction="GPB2" pintype="bidirectional"/>
+      <node ref="U7" pin="3" pinfunction="I3" pintype="input"/>
+    </net>
+    <net code="26" name="Net-(U4-GPB3)">
+      <node ref="U4" pin="4" pinfunction="GPB3" pintype="bidirectional"/>
+      <node ref="U7" pin="4" pinfunction="I4" pintype="input"/>
+    </net>
+    <net code="27" name="Net-(U4-GPB4)">
+      <node ref="U4" pin="5" pinfunction="GPB4" pintype="bidirectional"/>
+      <node ref="U7" pin="5" pinfunction="I5" pintype="input"/>
+    </net>
+    <net code="28" name="Net-(U4-GPB5)">
+      <node ref="U4" pin="6" pinfunction="GPB5" pintype="bidirectional"/>
+      <node ref="U7" pin="6" pinfunction="I6" pintype="input"/>
+    </net>
+    <net code="29" name="Net-(U4-GPB6)">
+      <node ref="U4" pin="7" pinfunction="GPB6" pintype="bidirectional"/>
+      <node ref="U7" pin="7" pinfunction="I7" pintype="input"/>
+    </net>
+    <net code="30" name="Net-(U4-GPB7)">
+      <node ref="U4" pin="8" pinfunction="GPB7" pintype="bidirectional"/>
+      <node ref="U7" pin="8" pinfunction="I8" pintype="input"/>
+    </net>
+    <net code="31" name="Net-(U5-GPA0)">
+      <node ref="U5" pin="21" pinfunction="GPA0" pintype="bidirectional"/>
+      <node ref="U9" pin="1" pinfunction="I1" pintype="input"/>
+    </net>
+    <net code="32" name="Net-(U5-GPA1)">
+      <node ref="U5" pin="22" pinfunction="GPA1" pintype="bidirectional"/>
+      <node ref="U9" pin="2" pinfunction="I2" pintype="input"/>
+    </net>
+    <net code="33" name="Net-(U5-GPA2)">
+      <node ref="U5" pin="23" pinfunction="GPA2" pintype="bidirectional"/>
+      <node ref="U9" pin="3" pinfunction="I3" pintype="input"/>
+    </net>
+    <net code="34" name="Net-(U5-GPA3)">
+      <node ref="U5" pin="24" pinfunction="GPA3" pintype="bidirectional"/>
+      <node ref="U9" pin="4" pinfunction="I4" pintype="input"/>
+    </net>
+    <net code="35" name="Net-(U5-GPA4)">
+      <node ref="U5" pin="25" pinfunction="GPA4" pintype="bidirectional"/>
+      <node ref="U9" pin="5" pinfunction="I5" pintype="input"/>
+    </net>
+    <net code="36" name="Net-(U5-GPA5)">
+      <node ref="U5" pin="26" pinfunction="GPA5" pintype="bidirectional"/>
+      <node ref="U9" pin="6" pinfunction="I6" pintype="input"/>
+    </net>
+    <net code="37" name="Net-(U5-GPA6)">
+      <node ref="U5" pin="27" pinfunction="GPA6" pintype="bidirectional"/>
+      <node ref="U9" pin="7" pinfunction="I7" pintype="input"/>
+    </net>
+    <net code="38" name="Net-(U5-GPA7)">
+      <node ref="U5" pin="28" pinfunction="GPA7" pintype="bidirectional"/>
+      <node ref="U9" pin="8" pinfunction="I8" pintype="input"/>
+    </net>
+    <net code="39" name="Net-(U5-GPB0)">
+      <node ref="U5" pin="1" pinfunction="GPB0" pintype="bidirectional"/>
+      <node ref="U6" pin="1" pinfunction="I1" pintype="input"/>
+    </net>
+    <net code="40" name="Net-(U5-GPB1)">
+      <node ref="U5" pin="2" pinfunction="GPB1" pintype="bidirectional"/>
+      <node ref="U6" pin="2" pinfunction="I2" pintype="input"/>
+    </net>
+    <net code="41" name="Net-(U5-GPB2)">
+      <node ref="U5" pin="3" pinfunction="GPB2" pintype="bidirectional"/>
+      <node ref="U6" pin="3" pinfunction="I3" pintype="input"/>
+    </net>
+    <net code="42" name="Net-(U5-GPB3)">
+      <node ref="U5" pin="4" pinfunction="GPB3" pintype="bidirectional"/>
+      <node ref="U6" pin="4" pinfunction="I4" pintype="input"/>
+    </net>
+    <net code="43" name="Net-(U5-GPB4)">
+      <node ref="U5" pin="5" pinfunction="GPB4" pintype="bidirectional"/>
+      <node ref="U6" pin="5" pinfunction="I5" pintype="input"/>
+    </net>
+    <net code="44" name="Net-(U5-GPB5)">
+      <node ref="U5" pin="6" pinfunction="GPB5" pintype="bidirectional"/>
+      <node ref="U6" pin="6" pinfunction="I6" pintype="input"/>
+    </net>
+    <net code="45" name="Net-(U5-GPB6)">
+      <node ref="U5" pin="7" pinfunction="GPB6" pintype="bidirectional"/>
+      <node ref="U6" pin="7" pinfunction="I7" pintype="input"/>
+    </net>
+    <net code="46" name="Net-(U5-GPB7)">
+      <node ref="U5" pin="8" pinfunction="GPB7" pintype="bidirectional"/>
+      <node ref="U6" pin="8" pinfunction="I8" pintype="input"/>
+    </net>
+    <net code="47" name="Net-(U10-I1)">
+      <node ref="U10" pin="1" pinfunction="I1" pintype="input"/>
+      <node ref="U4" pin="21" pinfunction="GPA0" pintype="bidirectional"/>
+    </net>
+    <net code="48" name="Net-(U10-I2)">
+      <node ref="U10" pin="2" pinfunction="I2" pintype="input"/>
+      <node ref="U4" pin="22" pinfunction="GPA1" pintype="bidirectional"/>
+    </net>
+    <net code="49" name="Net-(U10-I3)">
+      <node ref="U10" pin="3" pinfunction="I3" pintype="input"/>
+      <node ref="U4" pin="23" pinfunction="GPA2" pintype="bidirectional"/>
+    </net>
+    <net code="50" name="Net-(U10-I4)">
+      <node ref="U10" pin="4" pinfunction="I4" pintype="input"/>
+      <node ref="U4" pin="24" pinfunction="GPA3" pintype="bidirectional"/>
+    </net>
+    <net code="51" name="Net-(U10-I5)">
+      <node ref="U10" pin="5" pinfunction="I5" pintype="input"/>
+      <node ref="U4" pin="25" pinfunction="GPA4" pintype="bidirectional"/>
+    </net>
+    <net code="52" name="Net-(U10-I6)">
+      <node ref="U10" pin="6" pinfunction="I6" pintype="input"/>
+      <node ref="U4" pin="26" pinfunction="GPA5" pintype="bidirectional"/>
+    </net>
+    <net code="53" name="Net-(U10-I7)">
+      <node ref="U10" pin="7" pinfunction="I7" pintype="input"/>
+      <node ref="U4" pin="27" pinfunction="GPA6" pintype="bidirectional"/>
+    </net>
+    <net code="54" name="Net-(U10-I8)">
+      <node ref="U10" pin="8" pinfunction="I8" pintype="input"/>
+      <node ref="U4" pin="28" pinfunction="GPA7" pintype="bidirectional"/>
+    </net>
+    <net code="55" name="unconnected-(U1-5V-Pad23)">
+      <node ref="U1" pin="23" pinfunction="5V" pintype="power_in"/>
+    </net>
+    <net code="56" name="unconnected-(U1-GP4-Pad5)">
+      <node ref="U1" pin="5" pinfunction="GP4" pintype="bidirectional"/>
+    </net>
+    <net code="57" name="unconnected-(U1-GP5-Pad6)">
+      <node ref="U1" pin="6" pinfunction="GP5" pintype="bidirectional"/>
+    </net>
+    <net code="58" name="unconnected-(U1-GP6-Pad7)">
+      <node ref="U1" pin="7" pinfunction="GP6" pintype="bidirectional"/>
+    </net>
+    <net code="59" name="unconnected-(U1-GP7-Pad8)">
+      <node ref="U1" pin="8" pinfunction="GP7" pintype="bidirectional"/>
+    </net>
+    <net code="60" name="unconnected-(U1-GP8-Pad9)">
+      <node ref="U1" pin="9" pinfunction="GP8" pintype="bidirectional"/>
+    </net>
+    <net code="61" name="unconnected-(U1-GP9-Pad10)">
+      <node ref="U1" pin="10" pinfunction="GP9" pintype="bidirectional"/>
+    </net>
+    <net code="62" name="unconnected-(U1-GP10-Pad11)">
+      <node ref="U1" pin="11" pinfunction="GP10" pintype="bidirectional"/>
+    </net>
+    <net code="63" name="unconnected-(U1-GP11-Pad12)">
+      <node ref="U1" pin="12" pinfunction="GP11" pintype="bidirectional"/>
+    </net>
+    <net code="64" name="unconnected-(U1-GP12-Pad13)">
+      <node ref="U1" pin="13" pinfunction="GP12" pintype="bidirectional"/>
+    </net>
+    <net code="65" name="unconnected-(U1-GP13-Pad14)">
+      <node ref="U1" pin="14" pinfunction="GP13" pintype="bidirectional"/>
+    </net>
+    <net code="66" name="unconnected-(U1-GP14-Pad15)">
+      <node ref="U1" pin="15" pinfunction="GP14" pintype="bidirectional"/>
+    </net>
+    <net code="67" name="unconnected-(U1-GP15-Pad16)">
+      <node ref="U1" pin="16" pinfunction="GP15" pintype="bidirectional"/>
+    </net>
+    <net code="68" name="unconnected-(U1-GP26-Pad17)">
+      <node ref="U1" pin="17" pinfunction="GP26" pintype="bidirectional"/>
+    </net>
+    <net code="69" name="unconnected-(U1-GP27-Pad18)">
+      <node ref="U1" pin="18" pinfunction="GP27" pintype="bidirectional"/>
+    </net>
+    <net code="70" name="unconnected-(U1-GP28-Pad19)">
+      <node ref="U1" pin="19" pinfunction="GP28" pintype="bidirectional"/>
+    </net>
+    <net code="71" name="unconnected-(U1-GP29-Pad20)">
+      <node ref="U1" pin="20" pinfunction="GP29" pintype="bidirectional"/>
+    </net>
+    <net code="72" name="unconnected-(U2-INTA-Pad20)">
+      <node ref="U2" pin="20" pinfunction="INTA" pintype="tri_state"/>
+    </net>
+    <net code="73" name="unconnected-(U2-INTB-Pad19)">
+      <node ref="U2" pin="19" pinfunction="INTB" pintype="tri_state"/>
+    </net>
+    <net code="74" name="unconnected-(U2-NC-Pad11)">
+      <node ref="U2" pin="11" pinfunction="NC" pintype="no_connect"/>
+    </net>
+    <net code="75" name="unconnected-(U2-NC-Pad14)">
+      <node ref="U2" pin="14" pinfunction="NC" pintype="no_connect"/>
+    </net>
+    <net code="76" name="unconnected-(U3-O1-Pad18)">
+      <node ref="U3" pin="18" pinfunction="O1" pintype="open_collector"/>
+    </net>
+    <net code="77" name="unconnected-(U3-O2-Pad17)">
+      <node ref="U3" pin="17" pinfunction="O2" pintype="open_collector"/>
+    </net>
+    <net code="78" name="unconnected-(U3-O3-Pad16)">
+      <node ref="U3" pin="16" pinfunction="O3" pintype="open_collector"/>
+    </net>
+    <net code="79" name="unconnected-(U3-O4-Pad15)">
+      <node ref="U3" pin="15" pinfunction="O4" pintype="open_collector"/>
+    </net>
+    <net code="80" name="unconnected-(U3-O5-Pad14)">
+      <node ref="U3" pin="14" pinfunction="O5" pintype="open_collector"/>
+    </net>
+    <net code="81" name="unconnected-(U3-O6-Pad13)">
+      <node ref="U3" pin="13" pinfunction="O6" pintype="open_collector"/>
+    </net>
+    <net code="82" name="unconnected-(U3-O7-Pad12)">
+      <node ref="U3" pin="12" pinfunction="O7" pintype="open_collector"/>
+    </net>
+    <net code="83" name="unconnected-(U3-O8-Pad11)">
+      <node ref="U3" pin="11" pinfunction="O8" pintype="open_collector"/>
+    </net>
+    <net code="84" name="unconnected-(U4-INTA-Pad20)">
+      <node ref="U4" pin="20" pinfunction="INTA" pintype="tri_state"/>
+    </net>
+    <net code="85" name="unconnected-(U4-INTB-Pad19)">
+      <node ref="U4" pin="19" pinfunction="INTB" pintype="tri_state"/>
+    </net>
+    <net code="86" name="unconnected-(U4-NC-Pad11)">
+      <node ref="U4" pin="11" pinfunction="NC" pintype="no_connect"/>
+    </net>
+    <net code="87" name="unconnected-(U4-NC-Pad14)">
+      <node ref="U4" pin="14" pinfunction="NC" pintype="no_connect"/>
+    </net>
+    <net code="88" name="unconnected-(U5-INTA-Pad20)">
+      <node ref="U5" pin="20" pinfunction="INTA" pintype="tri_state"/>
+    </net>
+    <net code="89" name="unconnected-(U5-INTB-Pad19)">
+      <node ref="U5" pin="19" pinfunction="INTB" pintype="tri_state"/>
+    </net>
+    <net code="90" name="unconnected-(U5-NC-Pad11)">
+      <node ref="U5" pin="11" pinfunction="NC" pintype="no_connect"/>
+    </net>
+    <net code="91" name="unconnected-(U5-NC-Pad14)">
+      <node ref="U5" pin="14" pinfunction="NC" pintype="no_connect"/>
+    </net>
+    <net code="92" name="unconnected-(U6-O1-Pad18)">
+      <node ref="U6" pin="18" pinfunction="O1" pintype="open_collector"/>
+    </net>
+    <net code="93" name="unconnected-(U6-O2-Pad17)">
+      <node ref="U6" pin="17" pinfunction="O2" pintype="open_collector"/>
+    </net>
+    <net code="94" name="unconnected-(U6-O3-Pad16)">
+      <node ref="U6" pin="16" pinfunction="O3" pintype="open_collector"/>
+    </net>
+    <net code="95" name="unconnected-(U6-O4-Pad15)">
+      <node ref="U6" pin="15" pinfunction="O4" pintype="open_collector"/>
+    </net>
+    <net code="96" name="unconnected-(U6-O5-Pad14)">
+      <node ref="U6" pin="14" pinfunction="O5" pintype="open_collector"/>
+    </net>
+    <net code="97" name="unconnected-(U6-O6-Pad13)">
+      <node ref="U6" pin="13" pinfunction="O6" pintype="open_collector"/>
+    </net>
+    <net code="98" name="unconnected-(U6-O7-Pad12)">
+      <node ref="U6" pin="12" pinfunction="O7" pintype="open_collector"/>
+    </net>
+    <net code="99" name="unconnected-(U6-O8-Pad11)">
+      <node ref="U6" pin="11" pinfunction="O8" pintype="open_collector"/>
+    </net>
+    <net code="100" name="unconnected-(U7-O1-Pad18)">
+      <node ref="U7" pin="18" pinfunction="O1" pintype="open_collector"/>
+    </net>
+    <net code="101" name="unconnected-(U7-O2-Pad17)">
+      <node ref="U7" pin="17" pinfunction="O2" pintype="open_collector"/>
+    </net>
+    <net code="102" name="unconnected-(U7-O3-Pad16)">
+      <node ref="U7" pin="16" pinfunction="O3" pintype="open_collector"/>
+    </net>
+    <net code="103" name="unconnected-(U7-O4-Pad15)">
+      <node ref="U7" pin="15" pinfunction="O4" pintype="open_collector"/>
+    </net>
+    <net code="104" name="unconnected-(U7-O5-Pad14)">
+      <node ref="U7" pin="14" pinfunction="O5" pintype="open_collector"/>
+    </net>
+    <net code="105" name="unconnected-(U7-O6-Pad13)">
+      <node ref="U7" pin="13" pinfunction="O6" pintype="open_collector"/>
+    </net>
+    <net code="106" name="unconnected-(U7-O7-Pad12)">
+      <node ref="U7" pin="12" pinfunction="O7" pintype="open_collector"/>
+    </net>
+    <net code="107" name="unconnected-(U7-O8-Pad11)">
+      <node ref="U7" pin="11" pinfunction="O8" pintype="open_collector"/>
+    </net>
+    <net code="108" name="unconnected-(U8-O1-Pad18)">
+      <node ref="U8" pin="18" pinfunction="O1" pintype="open_collector"/>
+    </net>
+    <net code="109" name="unconnected-(U8-O2-Pad17)">
+      <node ref="U8" pin="17" pinfunction="O2" pintype="open_collector"/>
+    </net>
+    <net code="110" name="unconnected-(U8-O3-Pad16)">
+      <node ref="U8" pin="16" pinfunction="O3" pintype="open_collector"/>
+    </net>
+    <net code="111" name="unconnected-(U8-O4-Pad15)">
+      <node ref="U8" pin="15" pinfunction="O4" pintype="open_collector"/>
+    </net>
+    <net code="112" name="unconnected-(U8-O5-Pad14)">
+      <node ref="U8" pin="14" pinfunction="O5" pintype="open_collector"/>
+    </net>
+    <net code="113" name="unconnected-(U8-O6-Pad13)">
+      <node ref="U8" pin="13" pinfunction="O6" pintype="open_collector"/>
+    </net>
+    <net code="114" name="unconnected-(U8-O7-Pad12)">
+      <node ref="U8" pin="12" pinfunction="O7" pintype="open_collector"/>
+    </net>
+    <net code="115" name="unconnected-(U8-O8-Pad11)">
+      <node ref="U8" pin="11" pinfunction="O8" pintype="open_collector"/>
+    </net>
+    <net code="116" name="unconnected-(U9-O1-Pad18)">
+      <node ref="U9" pin="18" pinfunction="O1" pintype="open_collector"/>
+    </net>
+    <net code="117" name="unconnected-(U9-O2-Pad17)">
+      <node ref="U9" pin="17" pinfunction="O2" pintype="open_collector"/>
+    </net>
+    <net code="118" name="unconnected-(U9-O3-Pad16)">
+      <node ref="U9" pin="16" pinfunction="O3" pintype="open_collector"/>
+    </net>
+    <net code="119" name="unconnected-(U9-O4-Pad15)">
+      <node ref="U9" pin="15" pinfunction="O4" pintype="open_collector"/>
+    </net>
+    <net code="120" name="unconnected-(U9-O5-Pad14)">
+      <node ref="U9" pin="14" pinfunction="O5" pintype="open_collector"/>
+    </net>
+    <net code="121" name="unconnected-(U9-O6-Pad13)">
+      <node ref="U9" pin="13" pinfunction="O6" pintype="open_collector"/>
+    </net>
+    <net code="122" name="unconnected-(U9-O7-Pad12)">
+      <node ref="U9" pin="12" pinfunction="O7" pintype="open_collector"/>
+    </net>
+    <net code="123" name="unconnected-(U9-O8-Pad11)">
+      <node ref="U9" pin="11" pinfunction="O8" pintype="open_collector"/>
+    </net>
+    <net code="124" name="unconnected-(U10-O1-Pad18)">
+      <node ref="U10" pin="18" pinfunction="O1" pintype="open_collector"/>
+    </net>
+    <net code="125" name="unconnected-(U10-O2-Pad17)">
+      <node ref="U10" pin="17" pinfunction="O2" pintype="open_collector"/>
+    </net>
+    <net code="126" name="unconnected-(U10-O3-Pad16)">
+      <node ref="U10" pin="16" pinfunction="O3" pintype="open_collector"/>
+    </net>
+    <net code="127" name="unconnected-(U10-O4-Pad15)">
+      <node ref="U10" pin="15" pinfunction="O4" pintype="open_collector"/>
+    </net>
+    <net code="128" name="unconnected-(U10-O5-Pad14)">
+      <node ref="U10" pin="14" pinfunction="O5" pintype="open_collector"/>
+    </net>
+    <net code="129" name="unconnected-(U10-O6-Pad13)">
+      <node ref="U10" pin="13" pinfunction="O6" pintype="open_collector"/>
+    </net>
+    <net code="130" name="unconnected-(U10-O7-Pad12)">
+      <node ref="U10" pin="12" pinfunction="O7" pintype="open_collector"/>
+    </net>
+    <net code="131" name="unconnected-(U10-O8-Pad11)">
+      <node ref="U10" pin="11" pinfunction="O8" pintype="open_collector"/>
+    </net>
+  </nets>
+</export>

@@ -37,6 +37,11 @@ VU_COL_WIDTH = (DISP_WIDTH - (2 * DISP_BORDER)) // NUM_NOTES
 VU_COL_HEIGHT = DISP_HEIGHT - (2 * DISP_BORDER)
 
 # Other constants
+MCP23017_SCK = board.GP29 # pyright: ignore[reportAttributeAccessIssue]
+MCP23017_SDA = board.GP28 # pyright: ignore[reportAttributeAccessIssue]
+SSD1306_SCK  = board.GP27
+SSD1306_SDA  = board.GP26
+
 BASE_MCP23017_I2C_ADDRESS = 0x20
 NUM_MCP23017s = (NUM_NOTES // 16) + 1
 
@@ -57,17 +62,16 @@ if DEBUG: print("Number of MCP23017s: ", NUM_MCP23017s)
 # Functions
 
 def setup_mcp23017s():
-    i2c = busio.I2C(board.GP1, board.GP0)
+    i2c = busio.I2C(MCP23017_SCK, MCP23017_SDA)
     for mcp in range(1, NUM_MCP23017s + 1):
         if DEBUG: print("Setting up MCP")
         mcps.append(MCP23017(i2c, address = BASE_MCP23017_I2C_ADDRESS + mcp - 1))
         for pin in range(0,16):
-            if DEBUG: print("Adding MCP pin")
+            if DEBUG: print("Adding MCP: ", mcp, " Pin: ", pin)
             pipe_pins.append(mcps[mcp - 1].get_pin(pin)) # type: ignore
     if DEBUG: print("Total pins: ", len(pipe_pins))
     # set all the pins to output - even if we're not using them
     for pin in pipe_pins:
-        if DEBUG: print("Setting pin to output")
         pin.direction = Direction.OUTPUT
         pin.value = False
 
@@ -88,7 +92,7 @@ def setup_pipe_display():
 
 def setup_ssd1306_display() -> displayio.Group:
     displayio.release_displays()
-    i2c = busio.I2C(board.GP3, board.GP2)
+    i2c = busio.I2C(SSD1306_SCK, SSD1306_SDA)
     display_bus = I2CDisplayBus(i2c, device_address=DISP_ADDR)
     display = adafruit_displayio_ssd1306.SSD1306(display_bus, width=DISP_WIDTH, height=DISP_HEIGHT)
     # Make the display context
@@ -161,7 +165,7 @@ setup_pipe_display()
 
 midi = setup_midi(MIDI_CHANNEL)
 led  = setup_neopixel()
-mcps = setup_mcp23017s()
+setup_mcp23017s()
 
 print("Puffatron ready...")
 

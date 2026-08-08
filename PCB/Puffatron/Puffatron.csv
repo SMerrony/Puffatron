@@ -1,0 +1,6 @@
+"#","Reference","Qty","Value","Footprint","DNP"
+"1","Brd1","1","SSD1306","",""
+"2","R1, R2","2","R_Small","",""
+"3","U1","1","RP2040-ZERO","RP2040-ZERO:MODULE_RP2040-ZERO",""
+"4","U2, U4, U5","3","MCP23017_SP","Package_DIP:DIP-28_W7.62mm",""
+"5","U3, U6, U7, U8, U9, U10","6","ULN2803A","",""
