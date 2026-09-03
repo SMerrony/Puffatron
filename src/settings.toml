@@ -3,16 +3,27 @@
 
 # settings.toml for Puffatron
 
-VERSION = "v0.0.1"
-
+# DEBUG should be false for normal use - it slows down Puffaton response
 DEBUG = true
 
 MIDI_CHANNEL = 0
 
 LOWEST_NOTE = 60  # Middle-C
-HIGHEST_NOTE = 72 # c 
+HIGHEST_NOTE = 65 # E #72 # c 
+
+# The values below seem OK for a 10V power supply
+
+PWM_FREQ = 880
+ATTACK_PWM_DUTY_CYCLE = 65535
+ATTACK_DURATION_MS = 200
+# Below should be the lowest value that reliably keeps the solenoids energised
+HOLD_PWM_DUTY_CYCLE   = 15000
+
+# Only developers should edit the lines below
 
 DISP_ADDR   = 0x3c
 DISP_HEIGHT = 64
 DISP_WIDTH  = 128
 DISP_BORDER = 1
+
+VERSION = "v0.0.2"

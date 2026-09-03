@@ -160,16 +160,16 @@ def playable(note_num : int) -> bool:
         return True
 
 def start_note(note_num : int) -> None:
-    # i2c_addr, pin = note_to_gpio(note_num)
-    if DEBUG: print("Pin index: ", note_num - LOWEST_NOTE)
-    # pipe_pins[note_num - LOWEST_NOTE].value = True
-    note_start_ticks[note_num - LOWEST_NOTE] = supervisor.ticks_ms()
+    note_ix = note_num - LOWEST_NOTE
+    if DEBUG: print("Pin index: ", note_ix)
+    note_start_ticks[note_ix] = supervisor.ticks_ms()
+    pipe_pwms[note_ix].duty_cycle = ATTACK_PWM_DUTY_CYCLE
 
 def stop_note(note_num :int) -> None:
-    # i2c_addr, pin = note_to_gpio(note_num)
-    if DEBUG: print("Pin index: ", note_num - LOWEST_NOTE)
-    # pipe_pins[note_num - LOWEST_NOTE].value = False
-    note_start_ticks[note_num - LOWEST_NOTE] = -1
+    note_ix = note_num - LOWEST_NOTE
+    if DEBUG: print("Pin index: ", note_ix)
+    note_start_ticks[note_ix] = -1
+    pipe_pwms[note_ix].duty_cycle = 0
 
 def stop_all_notes() -> None:
     n = LOWEST_NOTE
@@ -220,3 +220,11 @@ while True:
         if msg.control >= 120 and msg.control <= 123:
             if DEBUG: print("All notes off/panic")
             stop_all_notes()
+    # check if any notes need to move from attack to hold phase...
+    now = supervisor.ticks_ms()
+    for t_ix in range(0, len(note_start_ticks)):
+        if note_start_ticks[t_ix] != -1:
+            if ticks_diff(now, note_start_ticks[t_ix]) > ATTACK_DURATION_MS:
+                if pipe_pwms[t_ix].duty_cycle == ATTACK_PWM_DUTY_CYCLE:
+                    pipe_pwms[t_ix].duty_cycle = HOLD_PWM_DUTY_CYCLE
+                    if DEBUG: print("Moved pipe to HOLD phase: ", t_ix)
