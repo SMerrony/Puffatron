@@ -3,33 +3,34 @@
 
 from   adafruit_display_shapes.rect import Rect
 from   adafruit_display_text import label
-import adafruit_displayio_ssd1306
+from   adafruit_displayio_ssd1306 import SSD1306
 from   adafruit_mcp230xx.mcp23017 import MCP23017
-import adafruit_midi
+from   adafruit_midi import MIDI
 from   adafruit_midi.note_on import NoteOn
 from   adafruit_midi.note_off import NoteOff
 from   adafruit_midi.control_change import ControlChange
 import board
-import busio
+from   busio import I2C
 from   digitalio import DigitalInOut, Direction
 import displayio
+import gc
 from   i2cdisplaybus import I2CDisplayBus
 import neopixel
-import supervisor
-import terminalio
-import time
-import usb_midi
+from   supervisor import get_setting # pyright: ignore[reportAttributeAccessIssue]
+from   terminalio import FONT
+from   time import sleep
+from   usb_midi import ports
 
 # Grab some settings 
-VERSION      = supervisor.get_setting("VERSION")
-DEBUG        = supervisor.get_setting("DEBUG")
-MIDI_CHANNEL = supervisor.get_setting("MIDI_CHANNEL")
-LOWEST_NOTE  = supervisor.get_setting("LOWEST_NOTE")
-HIGHEST_NOTE = supervisor.get_setting("HIGHEST_NOTE")
-DISP_ADDR    = supervisor.get_setting("DISP_ADDR")
-DISP_HEIGHT  = supervisor.get_setting("DISP_HEIGHT")
-DISP_WIDTH   = supervisor.get_setting("DISP_WIDTH")
-DISP_BORDER  = supervisor.get_setting("DISP_BORDER")
+VERSION      = get_setting("VERSION")
+DEBUG        = get_setting("DEBUG")
+MIDI_CHANNEL = get_setting("MIDI_CHANNEL")
+LOWEST_NOTE  = get_setting("LOWEST_NOTE")
+HIGHEST_NOTE = get_setting("HIGHEST_NOTE")
+DISP_ADDR    = get_setting("DISP_ADDR")
+DISP_HEIGHT  = get_setting("DISP_HEIGHT")
+DISP_WIDTH   = get_setting("DISP_WIDTH")
+DISP_BORDER  = get_setting("DISP_BORDER")
 
 # Derive some values
 NUM_NOTES = (HIGHEST_NOTE - LOWEST_NOTE) + 1
@@ -61,8 +62,8 @@ if DEBUG: print("Number of MCP23017s: ", NUM_MCP23017s)
 
 # Functions
 
-def setup_mcp23017s():
-    i2c = busio.I2C(MCP23017_SCK, MCP23017_SDA)
+def setup_mcp23017s() -> None:
+    i2c = I2C(MCP23017_SCK, MCP23017_SDA)
     for mcp in range(1, NUM_MCP23017s + 1):
         if DEBUG: print("Setting up MCP")
         mcps.append(MCP23017(i2c, address = BASE_MCP23017_I2C_ADDRESS + mcp - 1))
@@ -75,7 +76,7 @@ def setup_mcp23017s():
         pin.direction = Direction.OUTPUT
         pin.value = False
 
-def setup_pipe_display():
+def setup_pipe_display() -> None:
     # build a dict of all possible bars for the "VU meter"
     # this stores the images in the bar_dict
     for bar in range(LOWEST_NOTE, HIGHEST_NOTE + 1):
@@ -92,9 +93,9 @@ def setup_pipe_display():
 
 def setup_ssd1306_display() -> displayio.Group:
     displayio.release_displays()
-    i2c = busio.I2C(SSD1306_SCK, SSD1306_SDA)
+    i2c = I2C(SSD1306_SCK, SSD1306_SDA)
     display_bus = I2CDisplayBus(i2c, device_address=DISP_ADDR)
-    display = adafruit_displayio_ssd1306.SSD1306(display_bus, width=DISP_WIDTH, height=DISP_HEIGHT)
+    display = SSD1306(display_bus, width=DISP_WIDTH, height=DISP_HEIGHT)
     # Make the display context
     screen = displayio.Group()
     display.root_group = screen
@@ -104,17 +105,17 @@ def setup_neopixel() -> neopixel.NeoPixel:
     led = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.2)
     return led
 
-def setup_midi(channel : int) -> adafruit_midi.MIDI:
-    midi = adafruit_midi.MIDI(
-        midi_in = usb_midi.ports[0], # type: ignore
+def setup_midi(channel : int) -> MIDI:
+    midi = MIDI(
+        midi_in = ports[0], # type: ignore
         midi_out = None,
         in_channel = channel
         )
     return midi
 
-def splash(scr : displayio.Group):
+def splash(scr : displayio.Group) -> None:
     app_label = label.Label(
-        terminalio.FONT,
+        FONT,
         x=10, y = 12,
         text="Puffatron",
         color=0,
@@ -124,14 +125,14 @@ def splash(scr : displayio.Group):
     )
     scr.append(app_label)
     version_label = label.Label(
-        terminalio.FONT,
+        FONT,
         x=30, y = 40,
         text=VERSION,
         scale=2,
         padding_left=1, padding_top=0,
     )
     scr.append(version_label)
-    time.sleep(2)
+    sleep(2)
     scr.remove(version_label)
     scr.remove(app_label)
 
@@ -141,17 +142,17 @@ def playable(note_num : int) -> bool:
     else:
         return True
 
-def start_note(note_num):
+def start_note(note_num : int) -> None:
     # i2c_addr, pin = note_to_gpio(note_num)
     if DEBUG: print("Pin index: ", note_num - LOWEST_NOTE)
     pipe_pins[note_num - LOWEST_NOTE].value = True
 
-def stop_note(note_num):
+def stop_note(note_num :int) -> None:
     # i2c_addr, pin = note_to_gpio(note_num)
     if DEBUG: print("Pin index: ", note_num - LOWEST_NOTE)
     pipe_pins[note_num - LOWEST_NOTE].value = False
 
-def stop_all_notes():
+def stop_all_notes() -> None:
     n = LOWEST_NOTE
     while n <= HIGHEST_NOTE: 
         stop_note(n)
@@ -160,6 +161,7 @@ def stop_all_notes():
 # **** Main code starts here **** #
 
 screen = setup_ssd1306_display()
+if DEBUG: print("Free memory: ", gc.mem_free())
 splash(screen)
 setup_pipe_display()
 
@@ -167,6 +169,7 @@ midi = setup_midi(MIDI_CHANNEL)
 led  = setup_neopixel()
 setup_mcp23017s()
 
+if DEBUG: print("Free memory: ", gc.mem_free())
 print("Puffatron ready...")
 
 while True:
@@ -192,6 +195,7 @@ while True:
             except:
                 if DEBUG: print("Error removing VU bar which didn't exist")
             if DEBUG:led.fill(BLACK)
+        if DEBUG: print("Free memory: ", gc.mem_free())
     elif isinstance(msg, ControlChange):
         if msg.control >= 120 and msg.control <= 123:
             if DEBUG: print("All notes off/panic")

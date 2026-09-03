@@ -1,3 +1,7 @@
-import usb_cdc
+# SPDX-FileCopyrightText: 2023 Stephen Merrony
+# SPDX-License-Identifier: MIT
 
-usb_cdc.enable(console=False, data=True) # disable USB console
+import microcontroller
+
+# Mild/safe overclock
+microcontroller.cpu.frequency = 150000000

@@ -43,4 +43,4 @@ By establishing the following conventions we eliminate the need for complex conf
 ### I2C Wiring
 We use two I2C channels, one for the MCP23017 expanders, and one for the SSD1306 OLED display.
 * The expanders connect to GPIO 28 and 29
-* The display connect to GPIO 26 and 27
+* The display connects to GPIO 26 and 27

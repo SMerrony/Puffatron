@@ -29,14 +29,14 @@ Do not change the settings below unless you are developing Puffatron
 * VERSION 
 
 ## Off-the-shelf Parts
-* 5V mini-solenoids (one per pipe)
+* 12V or 5V mini-solenoids (one per pipe)
 * WaveShare RP2040-Zero (or close equivalent)
 * MCP23017 GPIO expander (one for each 16 pipes)
 * ULN2803A Darlington array (two for each 16 pipes)
 * SSD1306 OLED display
 * Blower...
 * PSU...
-* Breadboards/PCB
+* Breadboards
 
 ## 3D Printed Parts
 * Windchest
