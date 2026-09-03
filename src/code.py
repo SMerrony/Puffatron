@@ -4,11 +4,11 @@
 from   adafruit_display_shapes.rect import Rect
 from   adafruit_display_text import label
 from   adafruit_displayio_ssd1306 import SSD1306
-from   adafruit_mcp230xx.mcp23017 import MCP23017
 from   adafruit_midi import MIDI
 from   adafruit_midi.note_on import NoteOn
 from   adafruit_midi.note_off import NoteOff
 from   adafruit_midi.control_change import ControlChange
+import array
 import board
 from   busio import I2C
 from   digitalio import DigitalInOut, Direction
@@ -16,21 +16,26 @@ import displayio
 import gc
 from   i2cdisplaybus import I2CDisplayBus
 import neopixel
-from   supervisor import get_setting # pyright: ignore[reportAttributeAccessIssue]
+import pwmio
+import supervisor
 from   terminalio import FONT
-from   time import sleep
+import time
 from   usb_midi import ports
 
 # Grab some settings 
-VERSION      = get_setting("VERSION")
-DEBUG        = get_setting("DEBUG")
-MIDI_CHANNEL = get_setting("MIDI_CHANNEL")
-LOWEST_NOTE  = get_setting("LOWEST_NOTE")
-HIGHEST_NOTE = get_setting("HIGHEST_NOTE")
-DISP_ADDR    = get_setting("DISP_ADDR")
-DISP_HEIGHT  = get_setting("DISP_HEIGHT")
-DISP_WIDTH   = get_setting("DISP_WIDTH")
-DISP_BORDER  = get_setting("DISP_BORDER")
+VERSION      = supervisor.get_setting("VERSION")
+DEBUG        = supervisor.get_setting("DEBUG")
+MIDI_CHANNEL = supervisor.get_setting("MIDI_CHANNEL")
+LOWEST_NOTE  = supervisor.get_setting("LOWEST_NOTE")
+HIGHEST_NOTE = supervisor.get_setting("HIGHEST_NOTE")
+DISP_ADDR    = supervisor.get_setting("DISP_ADDR")
+DISP_HEIGHT  = supervisor.get_setting("DISP_HEIGHT")
+DISP_WIDTH   = supervisor.get_setting("DISP_WIDTH")
+DISP_BORDER  = supervisor.get_setting("DISP_BORDER")
+PWM_FREQ     = supervisor.get_setting("PWM_FREQ")
+ATTACK_PWM_DUTY_CYCLE = supervisor.get_setting("ATTACK_PWM_DUTY_CYCLE")
+ATTACK_DURATION_MS    = supervisor.get_setting("ATTACK_DURATION_MS")
+HOLD_PWM_DUTY_CYCLE   = supervisor.get_setting("HOLD_PWM_DUTY_CYCLE")
 
 # Derive some values
 NUM_NOTES = (HIGHEST_NOTE - LOWEST_NOTE) + 1
@@ -43,8 +48,8 @@ MCP23017_SDA = board.GP28 # pyright: ignore[reportAttributeAccessIssue]
 SSD1306_SCK  = board.GP27
 SSD1306_SDA  = board.GP26
 
-BASE_MCP23017_I2C_ADDRESS = 0x20
-NUM_MCP23017s = (NUM_NOTES // 16) + 1
+# BASE_MCP23017_I2C_ADDRESS = 0x20
+# NUM_MCP23017s = (NUM_NOTES // 16) + 1
 
 UNPLAYABLE = -1
 
@@ -54,27 +59,39 @@ BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 
 # Globals...
-mcps: list[MCP23017] = []
 pipe_pins: list[DigitalInOut] = []
+pipe_pwms: list[pwmio.PWMOut] = []
 bar_dict = {}
+note_start_ticks = array.array("i", ())
 
-if DEBUG: print("Number of MCP23017s: ", NUM_MCP23017s)
+# if DEBUG: print("Number of MCP23017s: ", NUM_MCP23017s)
 
 # Functions
 
-def setup_mcp23017s() -> None:
-    i2c = I2C(MCP23017_SCK, MCP23017_SDA)
-    for mcp in range(1, NUM_MCP23017s + 1):
-        if DEBUG: print("Setting up MCP")
-        mcps.append(MCP23017(i2c, address = BASE_MCP23017_I2C_ADDRESS + mcp - 1))
-        for pin in range(0,16):
-            if DEBUG: print("Adding MCP: ", mcp, " Pin: ", pin)
-            pipe_pins.append(mcps[mcp - 1].get_pin(pin)) # type: ignore
-    if DEBUG: print("Total pins: ", len(pipe_pins))
-    # set all the pins to output - even if we're not using them
-    for pin in pipe_pins:
-        pin.direction = Direction.OUTPUT
-        pin.value = False
+# We always setup the first 8 GPIOs as PWM outputs
+def setup_onboard_pwm() -> None:
+    pipe_pwms.append(pwmio.PWMOut(pin=board.GP0, duty_cycle=0, frequency=PWM_FREQ))
+    pipe_pwms.append(pwmio.PWMOut(pin=board.GP1, duty_cycle=0, frequency=PWM_FREQ))
+    pipe_pwms.append(pwmio.PWMOut(pin=board.GP2, duty_cycle=0, frequency=PWM_FREQ))
+    pipe_pwms.append(pwmio.PWMOut(pin=board.GP3, duty_cycle=0, frequency=PWM_FREQ))
+    pipe_pwms.append(pwmio.PWMOut(pin=board.GP4, duty_cycle=0, frequency=PWM_FREQ))
+    pipe_pwms.append(pwmio.PWMOut(pin=board.GP5, duty_cycle=0, frequency=PWM_FREQ))
+    pipe_pwms.append(pwmio.PWMOut(pin=board.GP6, duty_cycle=0, frequency=PWM_FREQ))
+    pipe_pwms.append(pwmio.PWMOut(pin=board.GP7, duty_cycle=0, frequency=PWM_FREQ))
+
+def init_note_start_times() -> None:
+    for t in range(LOWEST_NOTE, HIGHEST_NOTE + 1):
+        note_start_ticks.append(-1)
+
+_TICKS_PERIOD = 1<<29
+_TICKS_MAX = _TICKS_PERIOD-1
+_TICKS_HALFPERIOD =_TICKS_PERIOD//2
+
+def ticks_diff(ticks1, ticks2):
+    "Compute the signed difference between two ticks values, assuming that they are within 2**28 ticks"
+    diff = (ticks1 - ticks2) & _TICKS_MAX
+    diff = ((diff + _TICKS_HALFPERIOD) & _TICKS_MAX) - _TICKS_HALFPERIOD
+    return diff
 
 def setup_pipe_display() -> None:
     # build a dict of all possible bars for the "VU meter"
@@ -132,7 +149,7 @@ def splash(scr : displayio.Group) -> None:
         padding_left=1, padding_top=0,
     )
     scr.append(version_label)
-    sleep(2)
+    time.sleep(2)
     scr.remove(version_label)
     scr.remove(app_label)
 
@@ -145,12 +162,14 @@ def playable(note_num : int) -> bool:
 def start_note(note_num : int) -> None:
     # i2c_addr, pin = note_to_gpio(note_num)
     if DEBUG: print("Pin index: ", note_num - LOWEST_NOTE)
-    pipe_pins[note_num - LOWEST_NOTE].value = True
+    # pipe_pins[note_num - LOWEST_NOTE].value = True
+    note_start_ticks[note_num - LOWEST_NOTE] = supervisor.ticks_ms()
 
 def stop_note(note_num :int) -> None:
     # i2c_addr, pin = note_to_gpio(note_num)
     if DEBUG: print("Pin index: ", note_num - LOWEST_NOTE)
-    pipe_pins[note_num - LOWEST_NOTE].value = False
+    # pipe_pins[note_num - LOWEST_NOTE].value = False
+    note_start_ticks[note_num - LOWEST_NOTE] = -1
 
 def stop_all_notes() -> None:
     n = LOWEST_NOTE
@@ -167,13 +186,14 @@ setup_pipe_display()
 
 midi = setup_midi(MIDI_CHANNEL)
 led  = setup_neopixel()
-setup_mcp23017s()
+setup_onboard_pwm()
+init_note_start_times()
 
 if DEBUG: print("Free memory: ", gc.mem_free())
-print("Puffatron ready...")
+print("Puffatron ready...") 
 
 while True:
-    msg = midi.receive()
+    msg = midi.receive() # <--- This does not block
     if isinstance(msg, NoteOn) and msg.velocity != 0:
         if DEBUG: print("Note On:  ", msg.note, " velocity: ", msg.velocity)
         if playable(msg.note):
