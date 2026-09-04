@@ -9,7 +9,7 @@ DEBUG = true
 MIDI_CHANNEL = 0
 
 LOWEST_NOTE = 60  # Middle-C
-HIGHEST_NOTE = 65 # E #72 # c 
+HIGHEST_NOTE = 72 # c 
 
 # The values below seem OK for a 10V power supply
 

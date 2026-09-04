@@ -8,18 +8,18 @@ from   adafruit_midi import MIDI
 from   adafruit_midi.note_on import NoteOn
 from   adafruit_midi.note_off import NoteOff
 from   adafruit_midi.control_change import ControlChange
+from   adafruit_pca9685 import PCA9685
 import array
 import board
 from   busio import I2C
-from   digitalio import DigitalInOut, Direction
 import displayio
-import gc
+from   gc import mem_free
 from   i2cdisplaybus import I2CDisplayBus
 import neopixel
 import pwmio
 import supervisor
 from   terminalio import FONT
-import time
+from   time import sleep
 from   usb_midi import ports
 
 # Grab some settings 
@@ -43,13 +43,12 @@ VU_COL_WIDTH = (DISP_WIDTH - (2 * DISP_BORDER)) // NUM_NOTES
 VU_COL_HEIGHT = DISP_HEIGHT - (2 * DISP_BORDER)
 
 # Other constants
-MCP23017_SCK = board.GP29 # pyright: ignore[reportAttributeAccessIssue]
-MCP23017_SDA = board.GP28 # pyright: ignore[reportAttributeAccessIssue]
-SSD1306_SCK  = board.GP27
-SSD1306_SDA  = board.GP26
+PCA9685_SCK = board.GP29 # pyright: ignore[reportAttributeAccessIssue]
+PCA9685_SDA = board.GP28 # pyright: ignore[reportAttributeAccessIssue]
+SSD1306_SCK = board.GP27
+SSD1306_SDA = board.GP26
 
-# BASE_MCP23017_I2C_ADDRESS = 0x20
-# NUM_MCP23017s = (NUM_NOTES // 16) + 1
+PCA9685_BASE_I2C_ADDRESS = 0x40
 
 UNPLAYABLE = -1
 
@@ -59,25 +58,23 @@ BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 
 # Globals...
-pipe_pins: list[DigitalInOut] = []
-pipe_pwms: list[pwmio.PWMOut] = []
+onboard_pipe_pwms: list[pwmio.PWMOut] = []
+pcas     : list[PCA9685] = []
 bar_dict = {}
 note_start_ticks = array.array("i", ())
-
-# if DEBUG: print("Number of MCP23017s: ", NUM_MCP23017s)
 
 # Functions
 
 # We always setup the first 8 GPIOs as PWM outputs
 def setup_onboard_pwm() -> None:
-    pipe_pwms.append(pwmio.PWMOut(pin=board.GP0, duty_cycle=0, frequency=PWM_FREQ))
-    pipe_pwms.append(pwmio.PWMOut(pin=board.GP1, duty_cycle=0, frequency=PWM_FREQ))
-    pipe_pwms.append(pwmio.PWMOut(pin=board.GP2, duty_cycle=0, frequency=PWM_FREQ))
-    pipe_pwms.append(pwmio.PWMOut(pin=board.GP3, duty_cycle=0, frequency=PWM_FREQ))
-    pipe_pwms.append(pwmio.PWMOut(pin=board.GP4, duty_cycle=0, frequency=PWM_FREQ))
-    pipe_pwms.append(pwmio.PWMOut(pin=board.GP5, duty_cycle=0, frequency=PWM_FREQ))
-    pipe_pwms.append(pwmio.PWMOut(pin=board.GP6, duty_cycle=0, frequency=PWM_FREQ))
-    pipe_pwms.append(pwmio.PWMOut(pin=board.GP7, duty_cycle=0, frequency=PWM_FREQ))
+    onboard_pipe_pwms.append(pwmio.PWMOut(pin=board.GP0, duty_cycle=0, frequency=PWM_FREQ))
+    onboard_pipe_pwms.append(pwmio.PWMOut(pin=board.GP1, duty_cycle=0, frequency=PWM_FREQ))
+    onboard_pipe_pwms.append(pwmio.PWMOut(pin=board.GP2, duty_cycle=0, frequency=PWM_FREQ))
+    onboard_pipe_pwms.append(pwmio.PWMOut(pin=board.GP3, duty_cycle=0, frequency=PWM_FREQ))
+    onboard_pipe_pwms.append(pwmio.PWMOut(pin=board.GP4, duty_cycle=0, frequency=PWM_FREQ))
+    onboard_pipe_pwms.append(pwmio.PWMOut(pin=board.GP5, duty_cycle=0, frequency=PWM_FREQ))
+    onboard_pipe_pwms.append(pwmio.PWMOut(pin=board.GP6, duty_cycle=0, frequency=PWM_FREQ))
+    onboard_pipe_pwms.append(pwmio.PWMOut(pin=board.GP7, duty_cycle=0, frequency=PWM_FREQ))
 
 def init_note_start_times() -> None:
     for t in range(LOWEST_NOTE, HIGHEST_NOTE + 1):
@@ -93,9 +90,16 @@ def ticks_diff(ticks1, ticks2):
     diff = ((diff + _TICKS_HALFPERIOD) & _TICKS_MAX) - _TICKS_HALFPERIOD
     return diff
 
+def setup_pca9685(ix : int) -> PCA9685:
+    i2c = I2C(PCA9685_SCK, PCA9685_SDA)
+    pca = PCA9685(i2c_bus=i2c, address=PCA9685_BASE_I2C_ADDRESS + ix)
+    pca.frequency = PWM_FREQ
+    for c in range(0, 16):
+        pca.channels[c].duty_cycle = 0
+    return pca
+
 def setup_pipe_display() -> None:
-    # build a dict of all possible bars for the "VU meter"
-    # this stores the images in the bar_dict
+    "Build a dict of all possible bars for the VU meter, this stores the images in the bar_dict"
     for bar in range(LOWEST_NOTE, HIGHEST_NOTE + 1):
         adjusted_note = bar - LOWEST_NOTE
         x_left = adjusted_note * VU_COL_WIDTH
@@ -149,7 +153,7 @@ def splash(scr : displayio.Group) -> None:
         padding_left=1, padding_top=0,
     )
     scr.append(version_label)
-    time.sleep(2)
+    sleep(2)
     scr.remove(version_label)
     scr.remove(app_label)
 
@@ -163,13 +167,13 @@ def start_note(note_num : int) -> None:
     note_ix = note_num - LOWEST_NOTE
     if DEBUG: print("Pin index: ", note_ix)
     note_start_ticks[note_ix] = supervisor.ticks_ms()
-    pipe_pwms[note_ix].duty_cycle = ATTACK_PWM_DUTY_CYCLE
+    onboard_pipe_pwms[note_ix].duty_cycle = ATTACK_PWM_DUTY_CYCLE
 
 def stop_note(note_num :int) -> None:
     note_ix = note_num - LOWEST_NOTE
     if DEBUG: print("Pin index: ", note_ix)
     note_start_ticks[note_ix] = -1
-    pipe_pwms[note_ix].duty_cycle = 0
+    onboard_pipe_pwms[note_ix].duty_cycle = 0
 
 def stop_all_notes() -> None:
     n = LOWEST_NOTE
@@ -180,16 +184,24 @@ def stop_all_notes() -> None:
 # **** Main code starts here **** #
 
 screen = setup_ssd1306_display()
-if DEBUG: print("Free memory: ", gc.mem_free())
+if DEBUG: print("Free memory: ", mem_free())
 splash(screen)
 setup_pipe_display()
 
 midi = setup_midi(MIDI_CHANNEL)
 led  = setup_neopixel()
 setup_onboard_pwm()
+if NUM_NOTES > 8:
+    pcas.append(setup_pca9685(0))
+if NUM_NOTES > 24:
+    pcas.append(setup_pca9685(1))
+if NUM_NOTES > 40:
+    pcas.append(setup_pca9685(2))
+if DEBUG: print(len(pcas), " PCA9685 units initialised")
+
 init_note_start_times()
 
-if DEBUG: print("Free memory: ", gc.mem_free())
+if DEBUG: print("Free memory: ", mem_free())
 print("Puffatron ready...") 
 
 while True:
@@ -215,7 +227,7 @@ while True:
             except:
                 if DEBUG: print("Error removing VU bar which didn't exist")
             if DEBUG:led.fill(BLACK)
-        if DEBUG: print("Free memory: ", gc.mem_free())
+        if DEBUG: print("Free memory: ", mem_free())
     elif isinstance(msg, ControlChange):
         if msg.control >= 120 and msg.control <= 123:
             if DEBUG: print("All notes off/panic")
@@ -225,6 +237,6 @@ while True:
     for t_ix in range(0, len(note_start_ticks)):
         if note_start_ticks[t_ix] != -1:
             if ticks_diff(now, note_start_ticks[t_ix]) > ATTACK_DURATION_MS:
-                if pipe_pwms[t_ix].duty_cycle == ATTACK_PWM_DUTY_CYCLE:
-                    pipe_pwms[t_ix].duty_cycle = HOLD_PWM_DUTY_CYCLE
+                if onboard_pipe_pwms[t_ix].duty_cycle == ATTACK_PWM_DUTY_CYCLE:
+                    onboard_pipe_pwms[t_ix].duty_cycle = HOLD_PWM_DUTY_CYCLE
                     if DEBUG: print("Moved pipe to HOLD phase: ", t_ix)
