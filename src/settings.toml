@@ -15,7 +15,7 @@ HIGHEST_NOTE = 72 # c
 
 PWM_FREQ = 880
 ATTACK_PWM_DUTY_CYCLE = 65535
-ATTACK_DURATION_MS = 200
+ATTACK_DURATION_MS = 150
 # Below should be the lowest value that reliably keeps the solenoids energised
 HOLD_PWM_DUTY_CYCLE   = 15000
 

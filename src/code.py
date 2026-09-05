@@ -15,7 +15,6 @@ from   busio import I2C
 import displayio
 from   gc import mem_free
 from   i2cdisplaybus import I2CDisplayBus
-import neopixel
 import pwmio
 import supervisor
 from   terminalio import FONT
@@ -43,19 +42,15 @@ VU_COL_WIDTH = (DISP_WIDTH - (2 * DISP_BORDER)) // NUM_NOTES
 VU_COL_HEIGHT = DISP_HEIGHT - (2 * DISP_BORDER)
 
 # Other constants
-PCA9685_SCK = board.GP29 # pyright: ignore[reportAttributeAccessIssue]
-PCA9685_SDA = board.GP28 # pyright: ignore[reportAttributeAccessIssue]
+PCA9685_SCK = board.GP29
+PCA9685_SDA = board.GP28
 SSD1306_SCK = board.GP27
 SSD1306_SDA = board.GP26
 
 PCA9685_BASE_I2C_ADDRESS = 0x40
 
-UNPLAYABLE = -1
-
-RED = (0, 255, 0)
-GREEN = (255, 0, 0)
-BLUE = (0, 0, 255)
-BLACK = (0, 0, 0)
+UNPLAYABLE  = -1
+NOT_PLAYING = -1
 
 # Globals...
 onboard_pipe_pwms: list[pwmio.PWMOut] = []
@@ -65,8 +60,8 @@ note_start_ticks = array.array("i", ())
 
 # Functions
 
-# We always setup the first 8 GPIOs as PWM outputs
 def setup_onboard_pwm() -> None:
+    "Set up the first 8 GPIOs as PWM outputs, duty_cycle set to 0 to ensure no note plays at startup"
     onboard_pipe_pwms.append(pwmio.PWMOut(pin=board.GP0, duty_cycle=0, frequency=PWM_FREQ))
     onboard_pipe_pwms.append(pwmio.PWMOut(pin=board.GP1, duty_cycle=0, frequency=PWM_FREQ))
     onboard_pipe_pwms.append(pwmio.PWMOut(pin=board.GP2, duty_cycle=0, frequency=PWM_FREQ))
@@ -77,12 +72,13 @@ def setup_onboard_pwm() -> None:
     onboard_pipe_pwms.append(pwmio.PWMOut(pin=board.GP7, duty_cycle=0, frequency=PWM_FREQ))
 
 def init_note_start_times() -> None:
+    "Create the array of start times for each playable note and set them to NOT_PLAYING"
     for t in range(LOWEST_NOTE, HIGHEST_NOTE + 1):
-        note_start_ticks.append(-1)
+        note_start_ticks.append(NOT_PLAYING)
 
 _TICKS_PERIOD = 1<<29
-_TICKS_MAX = _TICKS_PERIOD-1
-_TICKS_HALFPERIOD =_TICKS_PERIOD//2
+_TICKS_MAX = _TICKS_PERIOD - 1
+_TICKS_HALFPERIOD =_TICKS_PERIOD // 2
 
 def ticks_diff(ticks1, ticks2):
     "Compute the signed difference between two ticks values, assuming that they are within 2**28 ticks"
@@ -91,6 +87,7 @@ def ticks_diff(ticks1, ticks2):
     return diff
 
 def setup_pca9685(ix : int) -> PCA9685:
+    "Set up a single PCA9685 and set all its duty_cycles to 0 to ensure no note plays at startup"
     i2c = I2C(PCA9685_SCK, PCA9685_SDA)
     pca = PCA9685(i2c_bus=i2c, address=PCA9685_BASE_I2C_ADDRESS + ix)
     pca.frequency = PWM_FREQ
@@ -121,10 +118,6 @@ def setup_ssd1306_display() -> displayio.Group:
     screen = displayio.Group()
     display.root_group = screen
     return screen
-
-def setup_neopixel() -> neopixel.NeoPixel:
-    led = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.2)
-    return led
 
 def setup_midi(channel : int) -> MIDI:
     midi = MIDI(
@@ -165,15 +158,29 @@ def playable(note_num : int) -> bool:
 
 def start_note(note_num : int) -> None:
     note_ix = note_num - LOWEST_NOTE
-    if DEBUG: print("Pin index: ", note_ix)
-    note_start_ticks[note_ix] = supervisor.ticks_ms()
-    onboard_pipe_pwms[note_ix].duty_cycle = ATTACK_PWM_DUTY_CYCLE
+    if note_start_ticks[note_ix] == NOT_PLAYING:
+        note_start_ticks[note_ix] = supervisor.ticks_ms()
+        if note_ix < 8:
+            onboard_pipe_pwms[note_ix].duty_cycle = ATTACK_PWM_DUTY_CYCLE
+        elif note_ix < 24:
+            pcas[0].channels[note_ix - 8].duty_cycle = ATTACK_PWM_DUTY_CYCLE
+        elif note_ix < 40:
+            pcas[1].channels[note_ix - 24].duty_cycle = ATTACK_PWM_DUTY_CYCLE
+        elif note_ix < 56:
+            pcas[2].channels[note_ix - 40].duty_cycle = ATTACK_PWM_DUTY_CYCLE
 
 def stop_note(note_num :int) -> None:
     note_ix = note_num - LOWEST_NOTE
-    if DEBUG: print("Pin index: ", note_ix)
-    note_start_ticks[note_ix] = -1
-    onboard_pipe_pwms[note_ix].duty_cycle = 0
+    if note_start_ticks[note_ix] != NOT_PLAYING:
+        note_start_ticks[note_ix] = NOT_PLAYING
+        if note_ix < 8:
+            onboard_pipe_pwms[note_ix].duty_cycle = 0
+        elif note_ix < 24:
+            pcas[0].channels[note_ix - 8].duty_cycle = 0
+        elif note_ix < 40:
+            pcas[1].channels[note_ix - 24].duty_cycle = 0
+        elif note_ix < 56:
+            pcas[2].channels[note_ix - 40].duty_cycle = 0
 
 def stop_all_notes() -> None:
     n = LOWEST_NOTE
@@ -187,9 +194,7 @@ screen = setup_ssd1306_display()
 if DEBUG: print("Free memory: ", mem_free())
 splash(screen)
 setup_pipe_display()
-
 midi = setup_midi(MIDI_CHANNEL)
-led  = setup_neopixel()
 setup_onboard_pwm()
 if NUM_NOTES > 8:
     pcas.append(setup_pca9685(0))
@@ -215,7 +220,6 @@ while True:
                 screen.append(bar_dict[msg.note])
             except:
                 if DEBUG: print("Error drawing a VU bar which was already there")    
-            if DEBUG: led.fill(GREEN) # Order: GRB
     elif isinstance(msg, NoteOff) or (isinstance(msg, NoteOn) and msg.velocity == 0):
         if DEBUG: print("Note Off: ", msg.note)
         if playable(msg.note):
@@ -226,7 +230,6 @@ while True:
                 screen.remove(bar_dict[msg.note])
             except:
                 if DEBUG: print("Error removing VU bar which didn't exist")
-            if DEBUG:led.fill(BLACK)
         if DEBUG: print("Free memory: ", mem_free())
     elif isinstance(msg, ControlChange):
         if msg.control >= 120 and msg.control <= 123:
@@ -234,9 +237,20 @@ while True:
             stop_all_notes()
     # check if any notes need to move from attack to hold phase...
     now = supervisor.ticks_ms()
-    for t_ix in range(0, len(note_start_ticks)):
-        if note_start_ticks[t_ix] != -1:
-            if ticks_diff(now, note_start_ticks[t_ix]) > ATTACK_DURATION_MS:
-                if onboard_pipe_pwms[t_ix].duty_cycle == ATTACK_PWM_DUTY_CYCLE:
-                    onboard_pipe_pwms[t_ix].duty_cycle = HOLD_PWM_DUTY_CYCLE
-                    if DEBUG: print("Moved pipe to HOLD phase: ", t_ix)
+    for note_ix in range(0, len(note_start_ticks)):
+        if note_start_ticks[note_ix] != NOT_PLAYING:
+            if ticks_diff(now, note_start_ticks[note_ix]) > ATTACK_DURATION_MS:
+                if note_ix < 8:
+                    if onboard_pipe_pwms[note_ix].duty_cycle == ATTACK_PWM_DUTY_CYCLE:
+                        if DEBUG: print("Moving pipe to HOLD phase: ", note_ix)
+                        onboard_pipe_pwms[note_ix].duty_cycle = HOLD_PWM_DUTY_CYCLE
+                elif note_ix < 24:
+                    if pcas[0].channels[note_ix - 8].duty_cycle == ATTACK_PWM_DUTY_CYCLE:
+                        if DEBUG: print("Moving pipe to HOLD phase: ", note_ix)
+                        pcas[0].channels[note_ix - 8].duty_cycle = HOLD_PWM_DUTY_CYCLE
+                elif note_ix < 40:
+                    if pcas[1].channels[note_ix - 24].duty_cycle == ATTACK_PWM_DUTY_CYCLE:
+                        pcas[1].channels[note_ix - 24].duty_cycle = HOLD_PWM_DUTY_CYCLE
+                elif note_ix < 56:
+                    if pcas[2].channels[note_ix - 40].duty_cycle == ATTACK_PWM_DUTY_CYCLE:
+                        pcas[2].channels[note_ix - 40].duty_cycle = HOLD_PWM_DUTY_CYCLE
