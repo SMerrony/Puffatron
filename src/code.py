@@ -15,22 +15,35 @@ from   busio import I2C
 import displayio
 from   gc import mem_free
 from   i2cdisplaybus import I2CDisplayBus
+from   micropython import const
 import pwmio
 import supervisor
 from   terminalio import FONT
 from   time import sleep
 from   usb_midi import ports
 
-# Grab some settings 
-VERSION      = supervisor.get_setting("VERSION")
+VERSION = const("v0.0.2")
+
+# Settings for the SSD1306 OLED display
+DISP_ADDR   = const(0x3c)
+DISP_HEIGHT = const(64)
+DISP_WIDTH  = const(128)
+DISP_BORDER = const(1)
+
+PCA9685_CHANNELS = const(16)
+ONBOARD_PIPES    = const(8)
+PCA_1_LAST_PIPE  = const(24)
+PCA_2_LAST_PIPE  = const(40)
+PCA_3_LAST_PIPE  = const(56)
+
+MIDI_CC_ALL_SOUND_OFF = const(120)
+MIDI_CC_POLY_MODE_ON  = const(127)
+
+# Grab the user settings 
 DEBUG        = supervisor.get_setting("DEBUG")
 MIDI_CHANNEL = supervisor.get_setting("MIDI_CHANNEL")
 LOWEST_NOTE  = supervisor.get_setting("LOWEST_NOTE")
 HIGHEST_NOTE = supervisor.get_setting("HIGHEST_NOTE")
-DISP_ADDR    = supervisor.get_setting("DISP_ADDR")
-DISP_HEIGHT  = supervisor.get_setting("DISP_HEIGHT")
-DISP_WIDTH   = supervisor.get_setting("DISP_WIDTH")
-DISP_BORDER  = supervisor.get_setting("DISP_BORDER")
 PWM_FREQ     = supervisor.get_setting("PWM_FREQ")
 ATTACK_PWM_DUTY_CYCLE = supervisor.get_setting("ATTACK_PWM_DUTY_CYCLE")
 ATTACK_DURATION_MS    = supervisor.get_setting("ATTACK_DURATION_MS")
@@ -47,10 +60,10 @@ PCA9685_SDA = board.GP28
 SSD1306_SCK = board.GP27
 SSD1306_SDA = board.GP26
 
-PCA9685_BASE_I2C_ADDRESS = 0x40
+PCA9685_BASE_I2C_ADDRESS = const(0x40)
 
-UNPLAYABLE  = -1
-NOT_PLAYING = -1
+UNPLAYABLE  = const(-1)
+NOT_PLAYING = const(-1)
 
 # Globals...
 onboard_pipe_pwms: list[pwmio.PWMOut] = []
@@ -91,7 +104,7 @@ def setup_pca9685(ix : int) -> PCA9685:
     i2c = I2C(PCA9685_SCK, PCA9685_SDA)
     pca = PCA9685(i2c_bus=i2c, address=PCA9685_BASE_I2C_ADDRESS + ix)
     pca.frequency = PWM_FREQ
-    for c in range(0, 16):
+    for c in range(0, PCA9685_CHANNELS):
         pca.channels[c].duty_cycle = 0
     return pca
 
@@ -130,7 +143,7 @@ def setup_midi(channel : int) -> MIDI:
 def splash(scr : displayio.Group) -> None:
     app_label = label.Label(
         FONT,
-        x=10, y = 12,
+        x = 10, y = 12,
         text="Puffatron",
         color=0,
         scale=2,
@@ -140,7 +153,7 @@ def splash(scr : displayio.Group) -> None:
     scr.append(app_label)
     version_label = label.Label(
         FONT,
-        x=30, y = 40,
+        x = 30, y = 40,
         text=VERSION,
         scale=2,
         padding_left=1, padding_top=0,
@@ -160,27 +173,27 @@ def start_note(note_num : int) -> None:
     note_ix = note_num - LOWEST_NOTE
     if note_start_ticks[note_ix] == NOT_PLAYING:
         note_start_ticks[note_ix] = supervisor.ticks_ms()
-        if note_ix < 8:
+        if note_ix < ONBOARD_PIPES:
             onboard_pipe_pwms[note_ix].duty_cycle = ATTACK_PWM_DUTY_CYCLE
-        elif note_ix < 24:
-            pcas[0].channels[note_ix - 8].duty_cycle = ATTACK_PWM_DUTY_CYCLE
-        elif note_ix < 40:
-            pcas[1].channels[note_ix - 24].duty_cycle = ATTACK_PWM_DUTY_CYCLE
-        elif note_ix < 56:
-            pcas[2].channels[note_ix - 40].duty_cycle = ATTACK_PWM_DUTY_CYCLE
+        elif note_ix < PCA_1_LAST_PIPE:
+            pcas[0].channels[note_ix - ONBOARD_PIPES].duty_cycle = ATTACK_PWM_DUTY_CYCLE
+        elif note_ix < PCA_2_LAST_PIPE:
+            pcas[1].channels[note_ix - PCA_1_LAST_PIPE].duty_cycle = ATTACK_PWM_DUTY_CYCLE
+        elif note_ix < PCA_3_LAST_PIPE:
+            pcas[2].channels[note_ix - PCA_2_LAST_PIPE].duty_cycle = ATTACK_PWM_DUTY_CYCLE
 
 def stop_note(note_num :int) -> None:
     note_ix = note_num - LOWEST_NOTE
     if note_start_ticks[note_ix] != NOT_PLAYING:
         note_start_ticks[note_ix] = NOT_PLAYING
-        if note_ix < 8:
+        if note_ix < ONBOARD_PIPES:
             onboard_pipe_pwms[note_ix].duty_cycle = 0
-        elif note_ix < 24:
-            pcas[0].channels[note_ix - 8].duty_cycle = 0
-        elif note_ix < 40:
-            pcas[1].channels[note_ix - 24].duty_cycle = 0
-        elif note_ix < 56:
-            pcas[2].channels[note_ix - 40].duty_cycle = 0
+        elif note_ix < PCA_1_LAST_PIPE:
+            pcas[0].channels[note_ix - ONBOARD_PIPES].duty_cycle = 0
+        elif note_ix < PCA_2_LAST_PIPE:
+            pcas[1].channels[note_ix - PCA_1_LAST_PIPE].duty_cycle = 0
+        elif note_ix < PCA_3_LAST_PIPE:
+            pcas[2].channels[note_ix - PCA_2_LAST_PIPE].duty_cycle = 0
 
 def stop_all_notes() -> None:
     n = LOWEST_NOTE
@@ -196,11 +209,11 @@ splash(screen)
 setup_pipe_display()
 midi = setup_midi(MIDI_CHANNEL)
 setup_onboard_pwm()
-if NUM_NOTES > 8:
+if NUM_NOTES > ONBOARD_PIPES:
     pcas.append(setup_pca9685(0))
-if NUM_NOTES > 24:
+if NUM_NOTES > PCA_1_LAST_PIPE:
     pcas.append(setup_pca9685(1))
-if NUM_NOTES > 40:
+if NUM_NOTES > PCA_2_LAST_PIPE:
     pcas.append(setup_pca9685(2))
 if DEBUG: print(len(pcas), " PCA9685 units initialised")
 
@@ -219,7 +232,8 @@ while True:
             try:
                 screen.append(bar_dict[msg.note])
             except:
-                if DEBUG: print("Error drawing a VU bar which was already there")    
+                if DEBUG: print("Error drawing a VU bar which was already there")
+                
     elif isinstance(msg, NoteOff) or (isinstance(msg, NoteOn) and msg.velocity == 0):
         if DEBUG: print("Note Off: ", msg.note)
         if playable(msg.note):
@@ -231,26 +245,29 @@ while True:
             except:
                 if DEBUG: print("Error removing VU bar which didn't exist")
         if DEBUG: print("Free memory: ", mem_free())
+        
     elif isinstance(msg, ControlChange):
-        if msg.control >= 120 and msg.control <= 123:
+        if msg.control >= MIDI_CC_ALL_SOUND_OFF and msg.control <= MIDI_CC_POLY_MODE_ON:
             if DEBUG: print("All notes off/panic")
             stop_all_notes()
+            
     # check if any notes need to move from attack to hold phase...
     now = supervisor.ticks_ms()
     for note_ix in range(0, len(note_start_ticks)):
         if note_start_ticks[note_ix] != NOT_PLAYING:
             if ticks_diff(now, note_start_ticks[note_ix]) > ATTACK_DURATION_MS:
-                if note_ix < 8:
+                if note_ix < ONBOARD_PIPES:
                     if onboard_pipe_pwms[note_ix].duty_cycle == ATTACK_PWM_DUTY_CYCLE:
                         if DEBUG: print("Moving pipe to HOLD phase: ", note_ix)
                         onboard_pipe_pwms[note_ix].duty_cycle = HOLD_PWM_DUTY_CYCLE
-                elif note_ix < 24:
-                    if pcas[0].channels[note_ix - 8].duty_cycle == ATTACK_PWM_DUTY_CYCLE:
+                elif note_ix < PCA_1_LAST_PIPE:
+                    if pcas[0].channels[note_ix - ONBOARD_PIPES].duty_cycle == ATTACK_PWM_DUTY_CYCLE:
                         if DEBUG: print("Moving pipe to HOLD phase: ", note_ix)
                         pcas[0].channels[note_ix - 8].duty_cycle = HOLD_PWM_DUTY_CYCLE
-                elif note_ix < 40:
-                    if pcas[1].channels[note_ix - 24].duty_cycle == ATTACK_PWM_DUTY_CYCLE:
-                        pcas[1].channels[note_ix - 24].duty_cycle = HOLD_PWM_DUTY_CYCLE
-                elif note_ix < 56:
-                    if pcas[2].channels[note_ix - 40].duty_cycle == ATTACK_PWM_DUTY_CYCLE:
-                        pcas[2].channels[note_ix - 40].duty_cycle = HOLD_PWM_DUTY_CYCLE
+                elif note_ix < PCA_2_LAST_PIPE:
+                    if pcas[1].channels[note_ix - PCA_1_LAST_PIPE].duty_cycle == ATTACK_PWM_DUTY_CYCLE:
+                        pcas[1].channels[note_ix - PCA_1_LAST_PIPE].duty_cycle = HOLD_PWM_DUTY_CYCLE
+                elif note_ix < PCA_3_LAST_PIPE:
+                    if pcas[2].channels[note_ix - PCA_2_LAST_PIPE].duty_cycle == ATTACK_PWM_DUTY_CYCLE:
+                        pcas[2].channels[note_ix - PCA_2_LAST_PIPE].duty_cycle = HOLD_PWM_DUTY_CYCLE
+  
