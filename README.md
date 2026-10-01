@@ -21,13 +21,6 @@ The configuration is stored in the `settings.toml` file.  All of the following s
 * __HIGHEST_NOTE__ - MIDI note number of highest note playable on this Puffatron
 * __DEBUG__ - set to `false` for production, `true` for development - controls debug messages, slows responsiveness of Puffatron
 
-Do not change the settings below unless you are developing Puffatron
-* DISP_ADDR 
-* DISP_HEIGHT 
-* DISP_WIDTH 
-* DISP_BORDER 
-* VERSION 
-
 ## Off-the-shelf Parts
 * 12V or 5V mini-solenoids (one per pipe)
 * WaveShare RP2040-Zero (or close equivalent)
